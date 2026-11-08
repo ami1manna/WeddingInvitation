@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wedding invitation</title>
+<meta name="theme-color" content="#2a0f0a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="loader" role="status"><span>Preparing the entrance</span></div>
+
+<!-- scroll track: its height drives the camera -->
+<div id="track" aria-hidden="true"></div>
+
+<main id="stage" aria-label="Scroll to walk through the temple entrance to the wedding invitation">
+  <div id="viewport">
+    <div id="world">
+
+      <!-- registered with the interior: glow, couple, interior -->
+      <div id="deep" class="layer">
+        <div id="glow"></div>
+        <div id="couple"><img src="assets/couple.webp" alt="Shiva and Parvati seated together" draggable="false"></div>
+      </div>
+      <div id="interior" class="layer"><img src="assets/interior.webp" alt="Temple hall with carved pillars, garlands and brass lamps" draggable="false"></div>
+
+      <!-- entrance -->
+      <div id="facade" class="layer">
+        <img id="wall" src="assets/facade.webp" alt="Temple entrance with carved wooden doors" draggable="false">
+        <div id="door-l" class="door"><img src="assets/door-left.webp" alt="" draggable="false"></div>
+        <div id="door-r" class="door"><img src="assets/door-right.webp" alt="" draggable="false"></div>
+      </div>
+
+      <div id="bloom" class="layer"></div>
+    </div>
+  </div>
+
+  <div id="vignette"></div>
+  <div id="scrim"></div>
+
+  <p id="hint" class="caption"><span id="hint-text"></span><b class="line"></b></p>
+  <p id="blessing" class="caption"></p>
+
+  <section id="end" aria-live="polite">
+    <p id="end-line"></p>
+    <h1 id="end-names"></h1>
+    <p id="end-details"></p>
+  </section>
+
+  <nav id="chapters" aria-label="Chapters"></nav>
+</main>
+
+<script src="content.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
