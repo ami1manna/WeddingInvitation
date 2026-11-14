@@ -1,0 +1,324 @@
+/* Evening Reception Scene with Palace Courtyard & Fireworks */
+
+.reception-stage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+  transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  cursor: crosshair;
+}
+
+/* Background Layer */
+.reception-bg-layer {
+  position: absolute;
+  inset: -5%;
+  width: 110%;
+  height: 110%;
+  z-index: 1;
+  pointer-events: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reception-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+.reception-night-tint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 15, 30, 0.45) 0%,
+    rgba(8, 25, 45, 0.2) 40%,
+    transparent 70%,
+    rgba(5, 12, 24, 0.5) 100%
+  );
+  pointer-events: none;
+}
+
+/* Twinkling Stars */
+.reception-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  animation: starTwinkle 2.5s infinite ease-in-out;
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.6); }
+  50% { opacity: 0.95; transform: scale(1.3); }
+}
+
+/* Fireworks Canvas */
+.reception-fireworks-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Reception Typography Content */
+.reception-content-wrap {
+  position: relative;
+  z-index: 10;
+  margin-top: clamp(24px, 5vh, 60px);
+  max-width: 620px;
+  width: 92vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  pointer-events: auto;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Date Plaque */
+.reception-date-badge {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  color: #f7d58b;
+  text-shadow: 0 0 16px rgba(247, 213, 139, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
+  margin-bottom: 4px;
+}
+
+.sat-text {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.9rem, 2vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.day-number {
+  font-family: 'Cinzel', 'Playfair Display', serif;
+  font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+  font-weight: 700;
+  line-height: 0.9;
+}
+
+.rd-sup {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.65rem, 1.3vw, 0.85rem);
+  font-weight: 600;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.may-script {
+  font-family: 'Great Vibes', 'Alex Brush', cursive;
+  font-size: clamp(2.6rem, 6.2vw, 4.2rem);
+  font-weight: 400;
+  color: #ffd875;
+  line-height: 0.8;
+  margin-left: 2px;
+}
+
+.year-number {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+/* Headings */
+.reception-title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: clamp(1.3rem, 3.2vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: #ffeab0;
+  text-shadow: 0 0 20px rgba(255, 234, 176, 0.5), 0 2px 10px rgba(0, 0, 0, 0.9);
+  margin: 6px 0 2px 0;
+  text-transform: uppercase;
+}
+
+.reception-tagline {
+  font-family: 'Marcellus', 'Cinzel', Georgia, serif;
+  font-size: clamp(0.78rem, 1.55vw, 0.98rem);
+  letter-spacing: 0.14em;
+  color: #c4d7e8;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.reception-flourish-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 280px;
+  margin: 12px 0;
+}
+
+.flourish-diamond {
+  color: #d4af37;
+  font-size: 0.75rem;
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.8));
+}
+
+.flourish-line {
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.75), transparent);
+}
+
+/* Event Timing & Venue */
+.reception-time-venue {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.8vh, 16px);
+  background: rgba(10, 25, 45, 0.58);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  padding: clamp(14px, 2.8vw, 24px) clamp(20px, 4vw, 36px);
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  margin-top: 4px;
+}
+
+.time-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.event-heading {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #f7d58b;
+  margin: 0;
+}
+
+.event-timing {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.85rem, 1.8vw, 1.15rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+  margin: 2px 0 0 0;
+}
+
+.venue-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.venue-at {
+  font-family: 'Marcellus', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: #a0b8cc;
+}
+
+.venue-name {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #ffe6a0;
+  margin: 2px 0 0 0;
+}
+
+.venue-location {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.8rem, 1.6vw, 1rem);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: #e0e8f0;
+  margin: 2px 0 0 0;
+}
+
+/* Button */
+.reception-action-row {
+  margin-top: 14px;
+}
+
+.reception-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+  color: #1a0f05;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.75rem, 1.3vw, 0.88rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reception-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.65);
+}
+
+/* Tap prompt */
+.tap-fireworks-prompt {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  font-family: 'Marcellus', 'Cinzel', serif;
+  font-size: clamp(0.78rem, 1.4vw, 0.92rem);
+  color: #ffe082;
+  letter-spacing: 0.12em;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 224, 130, 0.4);
+  pointer-events: none;
+  animation: promptPulse 2.5s infinite ease-in-out;
+}
+
+@keyframes promptPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .reception-content-wrap {
+    margin-top: 20px;
+    width: 94vw;
+  }
+
+  .reception-time-venue {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+}
+

@@ -1,0 +1,180 @@
+:root {
+  --maroon: #3a120c;
+  --ink: #5b1a12;
+  --gold: #e0a93c;
+  --cream: #fff3dc;
+  --display: "Marcellus", "Cormorant Garamond", Georgia, "Times New Roman", serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background: #2a0f0a;
+  min-height: 100vh;
+  font-family: var(--display);
+  color: var(--cream);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#scroll-track {
+  height: 1200vh;
+  width: 1px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.app-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Chapter Navigation */
+.app-chapters {
+  position: absolute;
+  right: max(18px, 2.2vw);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 50;
+}
+
+.app-chapters button {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  height: 32px;
+  padding: 0 6px;
+  font-size: 13px;
+  color: #fff3dc;
+  letter-spacing: 0.05em;
+  transition: color 0.3s ease;
+}
+
+.app-chapters button span {
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 0.25s, transform 0.25s;
+  text-shadow: 0 1px 10px rgba(30, 8, 2, 0.95);
+  white-space: nowrap;
+}
+
+.app-chapters button i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid #fff3dc;
+  background: transparent;
+  transition: background 0.25s, transform 0.25s, border-color 0.25s;
+  box-shadow: 0 0 8px rgba(30, 8, 2, 0.5);
+}
+
+.app-chapters button:hover span,
+.app-chapters button:focus-visible span {
+  opacity: 1;
+  transform: none;
+}
+
+.app-chapters button.active i {
+  background: var(--gold);
+  border-color: var(--gold);
+  transform: scale(1.4);
+}
+
+.app-chapters.light-mode button {
+  color: #431710;
+}
+
+.app-chapters.light-mode button span {
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.9);
+}
+
+.app-chapters.light-mode button i {
+  border-color: #431710;
+}
+
+.app-chapters.light-mode button.active i {
+  background: #a34828;
+  border-color: #a34828;
+}
+
+/* Quick Controls Header */
+.app-controls-bar {
+  position: absolute;
+  top: max(16px, 2vh);
+  right: max(18px, 2.2vw);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 60;
+}
+
+.app-ctrl-btn {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  color: #fff3dc;
+  background: rgba(42, 15, 10, 0.65);
+  border: 1px solid rgba(224, 169, 60, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(15, 4, 2, 0.35);
+}
+
+.app-ctrl-btn:hover {
+  background: rgba(58, 18, 12, 0.85);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+
+.app-ctrl-btn.active {
+  background: rgba(224, 169, 60, 0.25);
+  border-color: var(--gold);
+  color: #ffe2a6;
+}
+
+.app-controls-bar.light-mode .app-ctrl-btn {
+  color: #431710;
+  background: rgba(255, 250, 240, 0.75);
+  border-color: rgba(163, 72, 40, 0.35);
+  box-shadow: 0 4px 12px rgba(60, 20, 10, 0.1);
+}
+
+.app-controls-bar.light-mode .app-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: #a34828;
+}
+
+.app-controls-bar.light-mode .app-ctrl-btn.active {
+  background: rgba(163, 72, 40, 0.18);
+  border-color: #a34828;
+  color: #641b0f;
+}
+
+@media (max-width: 640px) {
+  .app-chapters button span {
+    display: none;
+  }
+}
+
