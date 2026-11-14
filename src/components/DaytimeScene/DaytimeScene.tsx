@@ -18,30 +18,23 @@ import './DaytimeScene.css';
 
 interface DaytimeSceneProps {
   progress?: number;
+  progressRef?: React.MutableRefObject<number>;
   opacity?: number;
   reducedMotion?: boolean;
 }
 
-/**
- * Layer stack, far to near (z-index is set in DaytimeScene.css):
- *
- *   B01 sky ........ B02 clouds (3 banks) .... sun rays
- *   B03 birds (2 flocks) .... B07/B08 trees .... horizon haze
- *   back petals + pollen .... B06 mandap .... B04/B05 hanging branches
- *   B09 garden ........ B10 lotus ........ front petals .... invitation copy
- *
- * Motion is driven by useDepthRig; see depthRig.ts for the per-layer tuning table.
- */
-export const DaytimeScene: React.FC<DaytimeSceneProps> = ({
+export const DaytimeScene: React.FC<DaytimeSceneProps> = React.memo(({
   progress = 0,
+  progressRef,
   opacity = 1,
   reducedMotion = false
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const active = opacity > 0.02;
+  const active = opacity > 0.005;
 
   const rig = useDepthRig(containerRef, {
     progress,
+    progressRef,
     enabled: active && !reducedMotion,
     reducedMotion
   });
@@ -90,6 +83,6 @@ export const DaytimeScene: React.FC<DaytimeSceneProps> = ({
       </div>
     </div>
   );
-};
+});
 
 export const EveningScene = DaytimeScene;

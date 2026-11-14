@@ -41,27 +41,40 @@ export const InvitationCopy: React.FC = React.memo(() => {
             <span>❖</span>
           </div>
 
-          <h1 className="invitation-couple-names reveal-line reveal-blur" style={line(2)}>
-            <span className="name-groom">Swaroop Samanta</span>
-            <span className="ampersand">&amp;</span>
-            <span className="name-bride">Pampa Manna</span>
-          </h1>
+          {/* Swaroop Samanta & Parents -> Ampersand -> Pampa Manna & Parents */}
+          <div className="invitation-couple-sequence">
+            {/* Groom Block */}
+            <div className="couple-person-block reveal-line reveal-blur" style={line(2)}>
+              <h2 className="person-name name-groom">Swaroop Samanta</h2>
+              <span className="relation-tag">S/o</span>
+              <p className="parent-name-line">Nobin Samanta</p>
+              <p className="parent-name-line">Dipali Samanta</p>
+            </div>
 
-          <div className="invitation-parents-block reveal-line" style={line(3)}>
-            <p className="parents-line">S/o Nobin Samanta &amp; Dipali Samanta</p>
-            <p className="parents-line">D/o Dipali Manna &amp; Samir Manna</p>
+            {/* Connecting Ampersand */}
+            <div className="couple-ampersand-divider reveal-line" style={line(3)} aria-hidden="true">
+              <span className="ampersand">&amp;</span>
+            </div>
+
+            {/* Bride Block */}
+            <div className="couple-person-block reveal-line reveal-blur" style={line(4)}>
+              <h2 className="person-name name-bride">Pampa Manna</h2>
+              <span className="relation-tag">D/o</span>
+              <p className="parent-name-line">Dipali Manna</p>
+              <p className="parent-name-line">Samir Manna</p>
+            </div>
           </div>
 
-          <div className="invitation-separator-small reveal-line" style={line(4)} aria-hidden="true">
+          <div className="invitation-separator-small reveal-line" style={line(5)} aria-hidden="true">
             <span className="sep-diamond">♦</span>
           </div>
 
-          <div className="invitation-date-block reveal-line" style={line(5)}>
+          <div className="invitation-date-block reveal-line" style={line(6)}>
             <time className="invitation-date">22 February 2027</time>
           </div>
 
           {/* Shaadi and Reception Details */}
-          <div className="invitation-events-grid reveal-line" style={line(6)}>
+          <div className="invitation-events-grid reveal-line" style={line(7)}>
             <div className="event-item">
               <span className="event-label">SHAADI CEREMONY</span>
               <span className="event-time">5:00 PM onwards</span>
@@ -74,13 +87,13 @@ export const InvitationCopy: React.FC = React.memo(() => {
           </div>
 
           {/* Venue Line */}
-          <div className="invitation-venue-highlight reveal-line" style={line(7)}>
+          <div className="invitation-venue-highlight reveal-line" style={line(8)}>
             <span className="venue-pin">📍</span>
             <span className="venue-name">{VENUE_NAME}</span>
           </div>
 
           {/* Interactive Directions Button */}
-          <div className="invitation-action-wrap reveal-line" style={line(8)}>
+          <div className="invitation-action-wrap reveal-line" style={line(9)}>
             <button
               type="button"
               className="btn-venue-directions"
@@ -102,6 +115,10 @@ export const InvitationCopy: React.FC = React.memo(() => {
       {modalOpen && (
         <div className="venue-modal-overlay" onClick={closeModal} role="dialog" aria-modal="true">
           <div className="venue-modal-card" onClick={e => e.stopPropagation()}>
+            <div className="card-gold-corner corner-tl" />
+            <div className="card-gold-corner corner-tr" />
+            <div className="card-gold-corner corner-bl" />
+            <div className="card-gold-corner corner-br" />
             <button className="venue-modal-close" onClick={closeModal} aria-label="Close directions">✕</button>
             <h3 className="venue-title">Wedding Venue &amp; Directions</h3>
             <p className="venue-subtitle">Swaroop &amp; Pampa Wedding Celebration</p>

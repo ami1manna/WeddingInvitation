@@ -96,7 +96,7 @@ function makeGlowSprite(): HTMLCanvasElement {
   return c;
 }
 
-export const PetalLayer: React.FC<PetalLayerProps> = ({ kind, rig, active, reducedMotion }) => {
+export const PetalLayer: React.FC<PetalLayerProps> = React.memo(({ kind, rig, active, reducedMotion }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -254,4 +254,4 @@ export const PetalLayer: React.FC<PetalLayerProps> = ({ kind, rig, active, reduc
       aria-hidden="true"
     />
   );
-};
+});

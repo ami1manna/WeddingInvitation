@@ -712,10 +712,9 @@
 }
 
 #bloom {
-  background: radial-gradient(ellipse 60% 70% at 50% 50%, #fff8e6 0%, #ffe9bd 45%, #ffd993 100%);
-  opacity: 0;
+  display: none !important;
+  opacity: 0 !important;
   pointer-events: none;
-  will-change: opacity;
 }
 
 #vignette {

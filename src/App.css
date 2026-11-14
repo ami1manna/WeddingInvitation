@@ -27,7 +27,7 @@ html, body {
 }
 
 #scroll-track {
-  height: 1200vh;
+  height: 750vh;
   width: 1px;
   position: absolute;
   top: 0;
@@ -42,6 +42,14 @@ html, body {
   height: 100vh;
   overflow: hidden;
   background-color: var(--midnight);
+}
+
+.scene-stage-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  will-change: opacity;
 }
 
 /* Chapter Navigation - Luxurious Evening Styling */
@@ -113,5 +121,81 @@ html, body {
 @media (max-width: 640px) {
   .app-chapters button span {
     display: none;
+  }
+}
+
+/* Floating Cinematic Auto-Scroll Control Pill */
+.autoscroll-control {
+  position: fixed;
+  left: max(18px, 2.5vw);
+  bottom: max(18px, 2.5vh);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(12, 20, 44, 0.78);
+  border: 1px solid rgba(224, 169, 60, 0.45);
+  border-radius: 30px;
+  padding: 8px 16px;
+  color: #fff8ed;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.65), inset 0 0 10px rgba(224, 169, 60, 0.1);
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+}
+
+.autoscroll-control:hover {
+  background: rgba(22, 34, 72, 0.92);
+  border-color: #ffd700;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.75), 0 0 16px rgba(245, 158, 11, 0.35);
+  transform: translateY(-2px);
+}
+
+.autoscroll-icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4af37 0%, #f59e0b 100%);
+  color: #060814;
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.autoscroll-control.active .autoscroll-icon-badge {
+  animation: badgePulse 2s infinite alternate;
+}
+
+@keyframes badgePulse {
+  0% { transform: scale(0.94); box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); }
+  100% { transform: scale(1.1); box-shadow: 0 0 14px rgba(255, 215, 0, 0.85); }
+}
+
+.autoscroll-label {
+  font-weight: 500;
+  color: #f7e7ce;
+}
+
+@media (max-width: 640px) {
+  .autoscroll-control {
+    left: 12px;
+    bottom: 14px;
+    padding: 6px 12px;
+    font-size: 11px;
+    gap: 8px;
+  }
+  .autoscroll-icon-badge {
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
   }
 }

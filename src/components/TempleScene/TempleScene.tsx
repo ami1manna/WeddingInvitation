@@ -8,12 +8,14 @@ import './TempleScene.css';
 
 interface TempleSceneProps {
   progress?: number;
+  progressRef?: React.MutableRefObject<number>;
   opacity?: number;
   reducedMotion?: boolean;
 }
 
-export const TempleScene: React.FC<TempleSceneProps> = ({
+export const TempleScene: React.FC<TempleSceneProps> = React.memo(({
   progress = 0,
+  progressRef: externalProgressRef,
   opacity = 1,
   reducedMotion = false
 }) => {
@@ -37,8 +39,9 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
   const scrimRef = useRef<HTMLDivElement>(null);
 
   // Store progress in a ref to decouple continuous 60fps rAF animation from re-renders
-  const progressRef = useRef(progress);
-  progressRef.current = progress;
+  const localProgressRef = useRef(progress);
+  localProgressRef.current = progress;
+  const getProgress = () => (externalProgressRef ? externalProgressRef.current : localProgressRef.current);
 
   // Responsive stage scaling (1920x1080 canvas fit)
   useEffect(() => {
@@ -139,7 +142,7 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
 
       const px = coordsRef.current.mx;
       const py = coordsRef.current.my;
-      const p = progressRef.current;
+      const p = getProgress();
 
       // 1. Camera Tilt (Responsive & Organic 3D perspective)
       if (worldRef.current && !reducedMotion) {
@@ -190,22 +193,22 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
         }
       }
 
-      // 4. Hall Interior & Sanctum Deep
-      const si = 0.82 + smooth(seg(p, 0.08, 0.86)) * 2.4;
-      const lift = -53 * smooth(seg(p, 0.5, 0.9));
+      // 4. Hall Interior & Sanctum Deep (Smooth cinematic dolly forward, natural proportions)
+      const si = 0.88 + smooth(seg(p, 0.15, 0.78)) * 0.38;
+      const lift = -30 * smooth(seg(p, 0.35, 0.78));
       if (interiorRef.current) {
         interiorRef.current.style.transform = `translate(${(-px * 13).toFixed(2)}px,${(-py * 8 + lift).toFixed(2)}px) scale(${si.toFixed(4)})`;
       }
       if (deepRef.current) {
-        const dScale = (si * (0.94 + 0.06 * smooth(seg(p, 0.25, 0.85)))).toFixed(4);
-        deepRef.current.style.transform = `translate(${(-px * 6).toFixed(2)}px,${(-py * 4 + lift * 0.88).toFixed(2)}px) scale(${dScale})`;
+        const dScale = (si * (0.96 + 0.04 * smooth(seg(p, 0.25, 0.75)))).toFixed(4);
+        deepRef.current.style.transform = `translate(${(-px * 6).toFixed(2)}px,${(-py * 4 + lift * 0.85).toFixed(2)}px) scale(${dScale})`;
       }
 
-      // 5. Couple & Sanctum Light
+      // 5. Couple & Sanctum Light (No excessive zoom - perfectly framed within sanctum arch)
       if (coupleRef.current) {
-        const kc = 0.96 + smooth(seg(p, 0.56, 1)) * 0.54;
-        const co = 1 - smooth(seg(p, 0.88, 0.98));
-        const hover = Math.sin(time * 1.7) * 3;
+        const kc = 0.96 + smooth(seg(p, 0.35, 0.72)) * 0.12;
+        const co = p < 0.88 ? 1 : Math.max(0, 1 - (p - 0.88) / 0.12);
+        const hover = Math.sin(time * 1.7) * 2.5;
         coupleRef.current.style.transform = `translate(${(-px * 4).toFixed(2)}px,${(-py * 2.5 + hover).toFixed(2)}px) scale(${kc.toFixed(4)})`;
         coupleRef.current.style.opacity = co.toFixed(3);
       }
@@ -218,19 +221,21 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
       }
 
       if (glowRef.current) {
-        glowRef.current.style.transform = `translate(${(-px * 2).toFixed(2)}px,${(-py * 1.5).toFixed(2)}px) scale(${(1 + 0.3 * smooth(seg(p, 0.45, 0.85))).toFixed(3)})`;
+        glowRef.current.style.transform = `translate(${(-px * 2).toFixed(2)}px,${(-py * 1.5).toFixed(2)}px) scale(${(1 + 0.25 * smooth(seg(p, 0.40, 0.78))).toFixed(3)})`;
         // Subtle sanctum glow behind Shiva and Parvati, completely 0 at closed entrance doors
         const sanctumGlow = smooth(seg(p, 0.35, 0.55)) * (1 - smooth(seg(p, 0.78, 0.95))) * 0.40;
         glowRef.current.style.opacity = sanctumGlow.toFixed(3);
       }
 
+      // Bloom overlay is disabled to eliminate the unwanted blank/beige frame
       if (bloomRef.current) {
-        bloomRef.current.style.opacity = smooth(seg(p, 0.82, 0.98)).toFixed(3);
+        bloomRef.current.style.opacity = '0';
+        bloomRef.current.style.display = 'none';
       }
 
       // Captions
-      if (hintRef.current) hintRef.current.style.opacity = (1 - seg(p, 0, 0.05)).toFixed(3);
-      const bo = smooth(seg(p, 0.64, 0.72)) * (1 - smooth(seg(p, 0.80, 0.86)));
+      if (hintRef.current) hintRef.current.style.opacity = (1 - smooth(seg(p, 0.03, 0.15))).toFixed(3);
+      const bo = smooth(seg(p, 0.38, 0.50)) * (1 - smooth(seg(p, 0.72, 0.85)));
       if (blessingRef.current) blessingRef.current.style.opacity = bo.toFixed(3);
       if (scrimRef.current) scrimRef.current.style.opacity = Math.max(bo, 1 - seg(p, 0, 0.05)).toFixed(3);
 
@@ -508,4 +513,4 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
       </p>
     </div>
   );
-};
+});

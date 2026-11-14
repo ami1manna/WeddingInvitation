@@ -39,29 +39,29 @@ export interface FxConfig {
 }
 
 export const FX: Record<string, FxConfig> = {
-  sky:            { y: -0.02, zoom: 0.08, pointer: 5 },
-  rays:           { y: -0.04, zoom: 0.14, pointer: 12, from: { opacity: 0 }, window: [0.05, 0.50] },
+  sky:            { y: -0.02, zoom: 0.06, pointer: 5 },
+  rays:           { y: -0.04, zoom: 0.10, pointer: 10 },
 
-  'cloud-high':   { x:  0.03, y: -0.05, zoom: 0.06, pointer: 9 },
-  'cloud-mid':    { x: -0.045, y: -0.08, zoom: 0.09, pointer: 16 },
-  'cloud-low':    { x:  0.06, y: -0.12, zoom: 0.12, pointer: 24 },
+  'cloud-high':   { x:  0.03, y: -0.04, zoom: 0.05, pointer: 8 },
+  'cloud-mid':    { x: -0.04, y: -0.06, zoom: 0.08, pointer: 14 },
+  'cloud-low':    { x:  0.05, y: -0.09, zoom: 0.10, pointer: 20 },
 
-  'birds-far':    { x:  0.12, y: -0.07, pointer: 16, from: { x: 0.10, opacity: 0 },  window: [0.05, 0.45] },
-  birds:          { x:  0.24, y: -0.14, pointer: 32, from: { x: -0.12, opacity: 0 }, window: [0.04, 0.42] },
+  'birds-far':    { x:  0.10, y: -0.06, pointer: 14 },
+  birds:          { x:  0.18, y: -0.10, pointer: 26 },
 
-  'trees-left':   { x: -0.08, zoom: 0.20, pointer: 24, from: { x: -0.22, opacity: 0 }, window: [0.00, 0.38] },
-  'trees-right':  { x:  0.08, zoom: 0.20, pointer: 24, from: { x:  0.22, opacity: 0 }, window: [0.00, 0.38] },
+  'trees-left':   { x: -0.06, zoom: 0.16, pointer: 20 },
+  'trees-right':  { x:  0.06, zoom: 0.16, pointer: 20 },
 
-  mandap:         { zoom: 0.35, y: 0.05, pointer: 18, from: { y: 0.16, scale: 0.88, opacity: 0 }, window: [0.00, 0.40] },
+  mandap:         { zoom: 0.28, y: 0.03, pointer: 16 },
 
-  'branches-left':  { x: -0.06, y: -0.08, zoom: 0.26, pointer: 30, wind:  2.2, from: { y: -0.30, rotate: -4, opacity: 0 }, window: [0.02, 0.42] },
-  'branches-right': { x:  0.06, y: -0.08, zoom: 0.26, pointer: 30, wind: -2.2, from: { y: -0.30, rotate:  4, opacity: 0 }, window: [0.02, 0.42] },
+  'branches-left':  { x: -0.05, y: -0.06, zoom: 0.20, pointer: 26, wind:  1.8 },
+  'branches-right': { x:  0.05, y: -0.06, zoom: 0.20, pointer: 26, wind: -1.8 },
 
-  garden:         { zoom: 0.26, y: 0.16, pointer: 36, from: { y: 0.24, opacity: 0 }, window: [0.00, 0.36] },
-  lotus:          { x: 0.06, y: 0.20, zoom: 0.36, pointer: 46, wind: -1.2, from: { y: 0.26, opacity: 0 }, window: [0.06, 0.46] },
+  garden:         { zoom: 0.20, y: 0.08, pointer: 30 },
+  lotus:          { x: 0.05, y: 0.12, zoom: 0.26, pointer: 38, wind: -1.0 },
 
-  // Invitation card appears gracefully over the illuminated night mandap
-  copy:           { y: -0.02, window: [0.50, 0.88], cssVar: '--copy' }
+  // Invitation card appears gracefully over the illuminated night mandap and remains stable
+  copy:           { y: -0.02, window: [0.55, 0.88], cssVar: '--copy' }
 };
 
 export interface RigState {
@@ -82,7 +82,8 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
 interface Options {
-  progress: number;
+  progress?: number;
+  progressRef?: MutableRefObject<number>;
   /** Run the loop (scene visible and motion allowed). */
   enabled: boolean;
   reducedMotion: boolean;
@@ -90,10 +91,14 @@ interface Options {
 
 export function useDepthRig(
   rootRef: RefObject<HTMLElement>,
-  { progress, enabled, reducedMotion }: Options
+  { progress = 0, progressRef, enabled, reducedMotion }: Options
 ): MutableRefObject<RigState> {
   const state = useRef<RigState>({ progress: 0, px: 0, py: 0, wind: 0, vel: 0, dp: 0 });
-  state.current.progress = progress;
+  if (progressRef) {
+    state.current.progress = progressRef.current;
+  } else {
+    state.current.progress = progress;
+  }
 
   useEffect(() => {
     const root = rootRef.current;
@@ -161,7 +166,9 @@ export function useDepthRig(
       const dt = clamp((now - last) / 1000, 0.001, 0.05);
       last = now;
 
-      const p = clamp(s.progress, 0, 1);
+      const rawP = progressRef ? progressRef.current : s.progress;
+      const p = clamp(rawP, 0, 1);
+      s.progress = p;
       s.dp = p - lastP;
       lastP = p;
       s.vel = s.dp / dt;
