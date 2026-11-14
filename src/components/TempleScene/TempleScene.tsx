@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import coupleImg from '../../../assets/couple.webp';
-import ganeshaSanctumImg from '../../../assets/sanctum/ganesha_sanctum.jpg';
 import interiorImg from '../../../assets/interior.webp';
 import facadeImg from '../../../assets/facade.webp';
 import doorLeftImg from '../../../assets/door-left.webp';
@@ -10,16 +9,12 @@ import './TempleScene.css';
 interface TempleSceneProps {
   progress?: number;
   opacity?: number;
-  px?: number;
-  py?: number;
   reducedMotion?: boolean;
 }
 
 export const TempleScene: React.FC<TempleSceneProps> = ({
   progress = 0,
   opacity = 1,
-  px = 0,
-  py = 0,
   reducedMotion = false
 }) => {
   const worldRef = useRef<HTMLDivElement>(null);
@@ -40,6 +35,10 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
   const hintRef = useRef<HTMLParagraphElement>(null);
   const blessingRef = useRef<HTMLParagraphElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
+
+  // Store progress in a ref to decouple continuous 60fps rAF animation from re-renders
+  const progressRef = useRef(progress);
+  progressRef.current = progress;
 
   // Responsive stage scaling (1920x1080 canvas fit)
   useEffect(() => {
@@ -64,6 +63,13 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
       coordsRef.current.tmy = (e.clientY / window.innerHeight - 0.5) * 2;
     };
 
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        coordsRef.current.tmx = (e.touches[0].clientX / window.innerWidth - 0.5) * 2;
+        coordsRef.current.tmy = (e.touches[0].clientY / window.innerHeight - 0.5) * 2;
+      }
+    };
+
     const onOrientation = (e: DeviceOrientationEvent) => {
       if (e.gamma !== null && e.beta !== null) {
         coordsRef.current.tmx = Math.max(-1, Math.min(1, e.gamma / 22));
@@ -72,12 +78,14 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
     };
 
     window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', onOrientation, { passive: true });
     }
 
     return () => {
       window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('touchmove', onTouchMove);
       if (window.DeviceOrientationEvent) {
         window.removeEventListener('deviceorientation', onOrientation);
       }
@@ -129,15 +137,14 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
       coordsRef.current.mx += (coordsRef.current.tmx - coordsRef.current.mx) * pk;
       coordsRef.current.my += (coordsRef.current.tmy - coordsRef.current.my) * pk;
 
-      // Use props if provided, otherwise internal lerped coords
-      const curPx = px !== 0 ? px : coordsRef.current.mx;
-      const curPy = py !== 0 ? py : coordsRef.current.my;
-      const p = progress;
+      const px = coordsRef.current.mx;
+      const py = coordsRef.current.my;
+      const p = progressRef.current;
 
-      // 1. Camera Tilt
+      // 1. Camera Tilt (Responsive & Organic 3D perspective)
       if (worldRef.current && !reducedMotion) {
-        const rotX = (-curPy * 2.5).toFixed(2);
-        const rotY = (curPx * 3.5).toFixed(2);
+        const rotX = (-py * 3.0).toFixed(2);
+        const rotY = (px * 4.0).toFixed(2);
         worldRef.current.style.transform = `scale(var(--s,1)) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
       }
 
@@ -148,16 +155,16 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
         if (fgVis) {
           const fgScale = 1 + 1.55 * smooth(seg(p, 0, 0.35));
           const fgLift = -140 * smooth(seg(p, 0.05, 0.35));
-          const fgTx = -curPx * 44;
-          const fgTy = -curPy * 28 + fgLift;
+          const fgTx = -px * 44;
+          const fgTy = -py * 28 + fgLift;
           const fgOp = 1 - smooth(seg(p, 0.20, 0.38));
           foregroundRef.current.style.transform = `translate(${fgTx.toFixed(2)}px,${fgTy.toFixed(2)}px) scale(${fgScale.toFixed(4)})`;
           foregroundRef.current.style.opacity = fgOp.toFixed(3);
 
           if (bellLRef.current && bellRRef.current) {
             const sway = Math.sin(time * 2.6) * 1.8;
-            bellLRef.current.style.transform = `rotate(${(curPx * 6 + sway).toFixed(2)}deg)`;
-            bellRRef.current.style.transform = `rotate(${(curPx * 6 + Math.sin(time * 2.6 + 1.2) * 1.8).toFixed(2)}deg)`;
+            bellLRef.current.style.transform = `rotate(${(px * 6 + sway).toFixed(2)}deg)`;
+            bellRRef.current.style.transform = `rotate(${(px * 6 + Math.sin(time * 2.6 + 1.2) * 1.8).toFixed(2)}deg)`;
           }
         }
       }
@@ -169,7 +176,7 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
         if (fv) {
           const F = 1 + smooth(seg(p, 0, 0.5)) * 3.9;
           const fade = 1 - seg(p, 0.28, 0.44);
-          facadeRef.current.style.transform = `translate(${(-curPx * 24 * fade).toFixed(2)}px,${(-curPy * 16 * fade).toFixed(2)}px) scale(${F.toFixed(4)})`;
+          facadeRef.current.style.transform = `translate(${(-px * 24 * fade).toFixed(2)}px,${(-py * 16 * fade).toFixed(2)}px) scale(${F.toFixed(4)})`;
 
           const a = 84 * inOut(seg(p, 0.10, 0.30));
           if (doorLRef.current) doorLRef.current.style.transform = `rotateY(${a.toFixed(2)}deg)`;
@@ -187,11 +194,11 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
       const si = 0.82 + smooth(seg(p, 0.08, 0.86)) * 2.4;
       const lift = -53 * smooth(seg(p, 0.5, 0.9));
       if (interiorRef.current) {
-        interiorRef.current.style.transform = `translate(${(-curPx * 13).toFixed(2)}px,${(-curPy * 8 + lift).toFixed(2)}px) scale(${si.toFixed(4)})`;
+        interiorRef.current.style.transform = `translate(${(-px * 13).toFixed(2)}px,${(-py * 8 + lift).toFixed(2)}px) scale(${si.toFixed(4)})`;
       }
       if (deepRef.current) {
         const dScale = (si * (0.94 + 0.06 * smooth(seg(p, 0.25, 0.85)))).toFixed(4);
-        deepRef.current.style.transform = `translate(${(-curPx * 6).toFixed(2)}px,${(-curPy * 4 + lift * 0.88).toFixed(2)}px) scale(${dScale})`;
+        deepRef.current.style.transform = `translate(${(-px * 6).toFixed(2)}px,${(-py * 4 + lift * 0.88).toFixed(2)}px) scale(${dScale})`;
       }
 
       // 5. Couple & Sanctum Light
@@ -199,19 +206,22 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
         const kc = 0.96 + smooth(seg(p, 0.56, 1)) * 0.54;
         const co = 1 - smooth(seg(p, 0.88, 0.98));
         const hover = Math.sin(time * 1.7) * 3;
-        coupleRef.current.style.transform = `translate(${(-curPx * 4).toFixed(2)}px,${(-curPy * 2.5 + hover).toFixed(2)}px) scale(${kc.toFixed(4)})`;
+        coupleRef.current.style.transform = `translate(${(-px * 4).toFixed(2)}px,${(-py * 2.5 + hover).toFixed(2)}px) scale(${kc.toFixed(4)})`;
         coupleRef.current.style.opacity = co.toFixed(3);
       }
 
       if (godraysRef.current) {
-        const rayRot = (time * 2.8 + curPx * 2).toFixed(2);
-        godraysRef.current.style.transform = `translate(${(-curPx * 2.2).toFixed(2)}px,${(-curPy * 1.6).toFixed(2)}px) rotate(${rayRot}deg) scale(1.2)`;
-        godraysRef.current.style.opacity = (smooth(seg(p, 0.08, 0.28)) * (1 - smooth(seg(p, 0.86, 0.98))) * 0.75).toFixed(3);
+        const rayRot = (time * 2.8 + px * 2).toFixed(2);
+        godraysRef.current.style.transform = `translate(${(-px * 2.2).toFixed(2)}px,${(-py * 1.6).toFixed(2)}px) rotate(${rayRot}deg) scale(1.1)`;
+        // Only visible when doors open
+        godraysRef.current.style.opacity = (smooth(seg(p, 0.12, 0.32)) * (1 - smooth(seg(p, 0.70, 0.90))) * 0.45).toFixed(3);
       }
 
       if (glowRef.current) {
-        glowRef.current.style.transform = `translate(${(-curPx * 2).toFixed(2)}px,${(-curPy * 1.5).toFixed(2)}px) scale(${(1 + 0.7 * smooth(seg(p, 0.6, 1))).toFixed(3)})`;
-        glowRef.current.style.opacity = (0.78 + 0.22 * seg(p, 0.55, 0.9)).toFixed(3);
+        glowRef.current.style.transform = `translate(${(-px * 2).toFixed(2)}px,${(-py * 1.5).toFixed(2)}px) scale(${(1 + 0.3 * smooth(seg(p, 0.45, 0.85))).toFixed(3)})`;
+        // Subtle sanctum glow behind Shiva and Parvati, completely 0 at closed entrance doors
+        const sanctumGlow = smooth(seg(p, 0.35, 0.55)) * (1 - smooth(seg(p, 0.78, 0.95))) * 0.40;
+        glowRef.current.style.opacity = sanctumGlow.toFixed(3);
       }
 
       if (bloomRef.current) {
@@ -284,7 +294,7 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [progress, reducedMotion]);
+  }, [reducedMotion]);
 
   return (
     <div
@@ -297,15 +307,54 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
     >
       <div className="temple-viewport">
         <div ref={worldRef} className="temple-world">
+          {/* Golden Hour Sunset Sky Backdrop */}
+          <div id="temple-sunset-sky" className="temple-layer" aria-hidden="true">
+            <div className="sunset-sky-gradient" />
+          </div>
+
           {/* Deep Sanctum Layer */}
           <div ref={deepRef} id="deep" className="temple-layer">
             <div ref={godraysRef} id="godrays" />
             <div ref={glowRef} id="glow" />
-            <div className="ganesha-sanctum-shrine">
-              <img src={ganeshaSanctumImg} alt="Lord Ganesha Sanctum with Chandelier and Diyas" draggable={false} />
-            </div>
+            <div className="sanctum-divine-aura" aria-hidden="true" />
             <div ref={coupleRef} id="couple">
-              <img src={coupleImg} alt="Divine blessings" draggable={false} />
+              <img src={coupleImg} alt="Shiva and Parvati seated together" draggable={false} />
+            </div>
+
+            {/* Pushpavrishti: Divine Shower of Flower Petals around Shiva & Parvati */}
+            <div className="divine-pushpavrishti" aria-hidden="true">
+              <span className="divine-petal dp-1" />
+              <span className="divine-petal dp-2" />
+              <span className="divine-petal dp-3" />
+              <span className="divine-petal dp-4" />
+              <span className="divine-petal dp-5" />
+              <span className="divine-petal dp-6" />
+              <span className="divine-petal dp-7" />
+              <span className="divine-petal dp-8" />
+            </div>
+
+            {/* Sacred Aromatic Dhoop Incense Burners */}
+            <div className="sanctum-dhoop dhoop-left" aria-hidden="true">
+              <div className="dhoop-bowl" />
+              <div className="dhoop-ember" />
+              <div className="dhoop-smoke smoke-a" />
+              <div className="dhoop-smoke smoke-b" />
+            </div>
+            <div className="sanctum-dhoop dhoop-right" aria-hidden="true">
+              <div className="dhoop-bowl" />
+              <div className="dhoop-ember" />
+              <div className="dhoop-smoke smoke-a" />
+              <div className="dhoop-smoke smoke-b" />
+            </div>
+
+            {/* Sacred Sanctum Diyas */}
+            <div className="sanctum-diya sanctum-diya-left" aria-hidden="true">
+              <div className="diya-flame" />
+              <div className="diya-glow" />
+            </div>
+            <div className="sanctum-diya sanctum-diya-right" aria-hidden="true">
+              <div className="diya-flame" />
+              <div className="diya-glow" />
             </div>
           </div>
 
@@ -317,12 +366,58 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
           {/* Facade & Carved Doors */}
           <div ref={facadeRef} id="facade" className="temple-layer">
             <div ref={doorSpillRef} id="door-spill" />
+
+            {/* Fluttering Sacred Saffron Flags (Dhwaja) atop Temple Pillars */}
+            <div className="temple-dhwaja dhwaja-left" aria-hidden="true">
+              <div className="dhwaja-finial" />
+              <div className="dhwaja-pole" />
+              <div className="dhwaja-cloth dhwaja-cloth-left" />
+            </div>
+            <div className="temple-dhwaja dhwaja-right" aria-hidden="true">
+              <div className="dhwaja-finial" />
+              <div className="dhwaja-pole" />
+              <div className="dhwaja-cloth dhwaja-cloth-right" />
+            </div>
+
             <img id="wall" src={facadeImg} alt="Temple entrance with carved wooden doors" draggable={false} />
             <div ref={doorLRef} id="door-l" className="door">
               <img src={doorLeftImg} alt="" draggable={false} />
             </div>
             <div ref={doorRRef} id="door-r" className="door">
               <img src={doorRightImg} alt="" draggable={false} />
+            </div>
+
+            {/* Wind-blown Petals at Temple Entrance */}
+            <div className="entrance-wind-petals" aria-hidden="true">
+              <span className="ew-petal ep-1" />
+              <span className="ew-petal ep-2" />
+              <span className="ew-petal ep-3" />
+              <span className="ew-petal ep-4" />
+              <span className="ew-petal ep-5" />
+            </div>
+
+            {/* Glowing Entrance Brass Diyas with Animated Smoke */}
+            <div className="entrance-diya entrance-diya-left" aria-hidden="true">
+              <div className="diya-glow" />
+              <div className="diya-smoke" />
+              <div className="diya-flame" />
+              <svg className="diya-base-svg" viewBox="0 0 64 36" fill="none">
+                <path d="M4 14 C12 28 52 28 60 14 C56 32 8 32 4 14 Z" fill="url(#diya-brass)" />
+                <ellipse cx="32" cy="14" rx="28" ry="6" fill="#c98a28" stroke="#ffe28a" strokeWidth="1.5" />
+                <ellipse cx="32" cy="14" rx="22" ry="4" fill="#693b0e" />
+                <path d="M30 6 Q32 1 34 6 Q36 12 32 14 Q28 12 30 6 Z" fill="#ffd54f" />
+              </svg>
+            </div>
+            <div className="entrance-diya entrance-diya-right" aria-hidden="true">
+              <div className="diya-glow" />
+              <div className="diya-smoke" />
+              <div className="diya-flame" />
+              <svg className="diya-base-svg" viewBox="0 0 64 36" fill="none">
+                <path d="M4 14 C12 28 52 28 60 14 C56 32 8 32 4 14 Z" fill="url(#diya-brass)" />
+                <ellipse cx="32" cy="14" rx="28" ry="6" fill="#c98a28" stroke="#ffe28a" strokeWidth="1.5" />
+                <ellipse cx="32" cy="14" rx="22" ry="4" fill="#693b0e" />
+                <path d="M30 6 Q32 1 34 6 Q36 12 32 14 Q28 12 30 6 Z" fill="#ffd54f" />
+              </svg>
             </div>
           </div>
 
@@ -333,6 +428,12 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
           <div ref={foregroundRef} id="foreground" className="temple-layer">
             <svg id="toran-svg" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true">
               <defs>
+                <linearGradient id="diya-brass" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#ffd875" />
+                  <stop offset="40%" stopColor="#d49324" />
+                  <stop offset="85%" stopColor="#874e0d" />
+                  <stop offset="100%" stopColor="#573004" />
+                </linearGradient>
                 <linearGradient id="brass-grad" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#fff1c4" />
                   <stop offset="35%" stopColor="#d4982c" />
@@ -403,7 +504,7 @@ export const TempleScene: React.FC<TempleSceneProps> = ({
       </p>
 
       <p ref={blessingRef} id="temple-blessing" className="temple-caption">
-        With the divine blessings of Lord Ganesha
+        With the blessings of Shiva & Parvati
       </p>
     </div>
   );

@@ -1,0 +1,1764 @@
+/* =========================================================
+   Evening-to-Night Wedding Environment
+   Cinematic Twilight-to-Night Mandap & Garden Celebration
+   ========================================================= */
+
+.daytime-viewport {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  touch-action: pan-y;
+  background-color: #070914;
+  font-family: var(--display, 'Marcellus', 'Cormorant Garamond', Georgia, serif);
+  z-index: 10;
+}
+
+.daytime-viewport.active {
+  pointer-events: auto;
+}
+
+.daytime-canvas-stage {
+  --stage-w: min(max(100vw, min(150vh, 140vw)), 177vh);
+  --mandap-w: calc(var(--stage-w) * 0.5);
+  --mandap-bottom: 11vh;
+  --trees-w: calc(var(--stage-w) * 0.78);
+  --branch-w: calc(var(--stage-w) * 0.42);
+  --garden-w: calc(var(--stage-w) * 1.08);
+  --garden-sink: 8vh;
+  --lotus-w: calc(var(--stage-w) * 0.34);
+
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .daytime-canvas-stage {
+    --mandap-w: 124vw;
+    --mandap-bottom: 6vh;
+    --trees-w: 104vw;
+    --branch-w: 84vw;
+    --garden-w: 164vw;
+    --garden-sink: 1vh;
+    --lotus-w: 56vw;
+  }
+}
+
+.daytime-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+[data-fx] {
+  will-change: transform;
+}
+
+/* z-index hierarchy */
+.daytime-sky-layer      { z-index: 1; }
+.daytime-clouds-layer   { z-index: 2; }
+.daytime-light-layer    { z-index: 3; }
+.daytime-birds-layer    { z-index: 4; }
+.daytime-trees-layer    { z-index: 5; }
+.daytime-haze-layer     { z-index: 6; }
+.petal-canvas-back      { z-index: 7; }
+.daytime-mandap-layer   { z-index: 8; }
+.daytime-branches-layer { z-index: 9; }
+.daytime-garden-layer   { z-index: 10; }
+.daytime-lotus-layer    { z-index: 11; }
+.petal-canvas-front     { z-index: 12; }
+.daytime-invitation-copy { z-index: 14; }
+
+/* =========================================================
+   1. Sky Layer: Dusk to Deep Midnight Navy
+   ========================================================= */
+.daytime-sky-layer {
+  inset: auto;
+  left: -4%;
+  top: -7%;
+  width: 108%;
+  height: 114%;
+  overflow: hidden;
+  background-color: #060814;
+}
+
+.sky-gradient-base {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    #050711 0%,
+    #0a1024 22%,
+    #141434 44%,
+    #221438 64%,
+    #3b1742 78%,
+    #591d38 88%,
+    #8c322b 96%,
+    #b85424 100%
+  );
+}
+
+.sky-sunset-horizon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 35%;
+  background: radial-gradient(
+    ellipse 75% 50% at 50% 100%,
+    rgba(235, 115, 35, 0.45) 0%,
+    rgba(175, 45, 65, 0.28) 45%,
+    transparent 85%
+  );
+  filter: blur(8px);
+}
+
+/* Twinkling Night Stars */
+.sky-stars-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sky-star {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 12px rgba(230, 200, 255, 0.6);
+  animation: starTwinkle ease-in-out infinite alternate;
+}
+
+@keyframes starTwinkle {
+  0%   { opacity: 0.25; transform: scale(0.8); }
+  50%  { opacity: 0.95; transform: scale(1.3); }
+  100% { opacity: 0.35; transform: scale(0.9); }
+}
+
+/* Luminous Silver-Gold Crescent Moon */
+.sky-moon-container {
+  position: absolute;
+  top: 7%;
+  right: 14%;
+  width: 64px;
+  height: 64px;
+}
+
+.sky-moon-halo {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 250, 220, 0.35) 0%, rgba(220, 200, 255, 0.12) 50%, transparent 75%);
+  filter: blur(10px);
+  animation: moonGlowPulse 6s ease-in-out infinite alternate;
+}
+
+.sky-moon-svg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes moonGlowPulse {
+  0%   { opacity: 0.7; transform: scale(0.96); }
+  100% { opacity: 1; transform: scale(1.08); }
+}
+
+/* =========================================================
+   2. Twilight / Nocturnal Clouds
+   ========================================================= */
+.cloud-fx {
+  position: absolute;
+  inset: 0;
+}
+
+.cloud-tier {
+  position: absolute;
+  left: -30%;
+  width: 160%;
+  height: 42%;
+  will-change: transform;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 24%, #000 76%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 24%, #000 76%, transparent 100%);
+}
+
+.cloud-tier .cloud-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* Dusk / Night nocturnal color grading */
+  filter: brightness(0.24) contrast(1.22) saturate(0.85) hue-rotate(-24deg) drop-shadow(0 0 16px rgba(10, 5, 22, 0.7));
+}
+
+.cloud-tier-high {
+  top: -4%;
+  opacity: 0.45;
+  animation: cloudDriftSlow 90s ease-in-out infinite alternate;
+}
+.cloud-tier-high .cloud-img { object-position: 50% 12%; }
+
+.cloud-tier-mid {
+  top: 9%;
+  left: -45%;
+  width: 190%;
+  height: 46%;
+  opacity: 0.7;
+  animation: cloudDriftMid 60s ease-in-out infinite alternate;
+}
+.cloud-tier-mid .cloud-img { object-position: 50% 50%; transform: scaleX(-1); }
+
+.cloud-tier-low {
+  top: 22%;
+  left: -60%;
+  width: 220%;
+  height: 50%;
+  opacity: 0.52;
+  animation: cloudDriftSlow 70s ease-in-out infinite alternate-reverse;
+}
+.cloud-tier-low .cloud-img { object-position: 50% 92%; }
+
+@keyframes cloudDriftSlow {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(5%, 0, 0); }
+}
+
+@keyframes cloudDriftMid {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-6%, 0, 0); }
+}
+
+/* =========================================================
+   3. Evening Lighting & Atmosphere (Moonlight & Spotlight)
+   ========================================================= */
+.moonlight-rays {
+  position: absolute;
+  inset: -6% -10% 0 -10%;
+  transform-origin: 75% 0;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.4) 45%, transparent 85%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.4) 45%, transparent 85%);
+  pointer-events: none;
+}
+
+.moonlight-beam-spin {
+  position: absolute;
+  inset: 0;
+  transform-origin: 75% 0;
+  background:
+    repeating-conic-gradient(from 200deg at 75% -5%,
+      transparent 0deg 4.2deg, rgba(200, 225, 255, 0.12) 5.2deg, transparent 6.4deg 13deg),
+    repeating-conic-gradient(from 208deg at 75% -5%,
+      transparent 0deg 6.8deg, rgba(255, 248, 220, 0.14) 8deg, transparent 9.4deg 18deg);
+  opacity: 0.8;
+  animation: moonRaySway 28s ease-in-out infinite alternate;
+}
+
+@keyframes moonRaySway {
+  from { transform: rotate(-3deg); opacity: 0.6; }
+  to   { transform: rotate(3deg); opacity: 0.95; }
+}
+
+.night-ambient-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 70%,
+    rgba(255, 170, 50, 0.12) 0%,
+    rgba(35, 15, 45, 0.15) 50%,
+    transparent 80%
+  );
+  pointer-events: none;
+}
+
+/* Floating Atmosphere Bokeh */
+.atmosphere-bokeh {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.atmo-disc {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 215, 120, 0.5) 0%, rgba(255, 170, 50, 0.18) 60%, transparent 100%);
+  filter: blur(4px);
+  animation: bokehFloat 14s ease-in-out infinite alternate;
+}
+
+.ad-1 { left: 18%; top: 38%; width: 44px; height: 44px; animation-duration: 16s; }
+.ad-2 { left: 82%; top: 28%; width: 62px; height: 62px; animation-duration: 19s; animation-delay: -4s; }
+.ad-3 { left: 32%; top: 62%; width: 50px; height: 50px; animation-duration: 15s; animation-delay: -8s; }
+.ad-4 { left: 68%; top: 58%; width: 40px; height: 40px; animation-duration: 18s; animation-delay: -2s; }
+.ad-5 { left: 48%; top: 22%; width: 56px; height: 56px; animation-duration: 22s; animation-delay: -11s; }
+.ad-6 { left: 8%; top: 54%; width: 36px; height: 36px; animation-duration: 17s; animation-delay: -6s; }
+
+@keyframes bokehFloat {
+  0%   { transform: translateY(0) scale(0.9); opacity: 0.35; }
+  50%  { transform: translateY(-20px) scale(1.15); opacity: 0.85; }
+  100% { transform: translateY(12px) scale(0.95); opacity: 0.45; }
+}
+
+/* =========================================================
+   4. Evening Birds Silhouettes
+   ========================================================= */
+.birds-fx {
+  position: absolute;
+  inset: 0;
+}
+
+.birds-flight-wrapper {
+  position: absolute;
+}
+
+.flock-near {
+  top: 8vh;
+  left: -20vw;
+  width: clamp(120px, 18vw, 260px);
+  animation: birdFlight 28s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.flock-far {
+  top: 19vh;
+  right: -20vw;
+  width: clamp(72px, 10vw, 150px);
+  opacity: 0.75;
+  animation: birdFlightFar 42s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: -15s;
+}
+
+.flock-flip {
+  transform: scaleX(-1);
+}
+
+.birds-img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  animation: birdBob 3.5s ease-in-out infinite alternate;
+  /* Evening bird silhouettes */
+  filter: brightness(0.18) contrast(1.4);
+}
+
+.flock-far .birds-img {
+  animation-duration: 4.6s;
+  filter: brightness(0.16) contrast(1.4);
+}
+
+@keyframes birdFlight {
+  0%   { transform: translate3d(0, 0, 0) scale(0.85); opacity: 0; }
+  5%   { opacity: 0.9; }
+  45%  { transform: translate3d(65vw, 4vh, 0) scale(1); opacity: 1; }
+  92%  { opacity: 0.85; }
+  100% { transform: translate3d(125vw, -3vh, 0) scale(0.9); opacity: 0; }
+}
+
+@keyframes birdFlightFar {
+  0%   { transform: translate3d(0, 0, 0) scale(0.8); opacity: 0; }
+  6%   { opacity: 0.75; }
+  50%  { transform: translate3d(-65vw, -3vh, 0) scale(1); opacity: 0.85; }
+  92%  { opacity: 0.7; }
+  100% { transform: translate3d(-125vw, 3vh, 0) scale(0.9); opacity: 0; }
+}
+
+@keyframes birdBob {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(8px); }
+}
+
+/* =========================================================
+   5. Evening Trees with Fairy Lights & Hanging Lanterns
+   ========================================================= */
+.trees-cluster {
+  position: absolute;
+  bottom: -2vh;
+  width: var(--trees-w);
+}
+
+.trees-left  { left: -4vw;  transform-origin: 0 100%; }
+.trees-right { right: -4vw; transform-origin: 100% 100%; }
+
+/* Tree Wind Sway Animations */
+.tree-sway-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.tree-sway-left {
+  transform-origin: 15% 100%;
+  animation: treeWindSwayLeft 8s ease-in-out infinite alternate;
+}
+
+.tree-sway-right {
+  transform-origin: 85% 100%;
+  animation: treeWindSwayRight 9.2s ease-in-out infinite alternate;
+}
+
+@keyframes treeWindSwayLeft {
+  0% {
+    transform: rotate(0deg) skewX(0deg);
+  }
+  50% {
+    transform: rotate(1.4deg) skewX(-0.8deg);
+  }
+  100% {
+    transform: rotate(-0.8deg) skewX(0.5deg);
+  }
+}
+
+@keyframes treeWindSwayRight {
+  0% {
+    transform: rotate(0deg) skewX(0deg);
+  }
+  50% {
+    transform: rotate(-1.5deg) skewX(0.9deg);
+  }
+  100% {
+    transform: rotate(0.9deg) skewX(-0.6deg);
+  }
+}
+
+.trees-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 8%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 8%);
+  /* Evening/Night color grading: deep navy-green shadows, warm rim highlights */
+  filter: brightness(0.40) contrast(1.18) saturate(0.85) hue-rotate(-18deg) drop-shadow(0 15px 35px rgba(4, 6, 15, 0.85));
+}
+
+/* Tree Fairy Lights */
+.tree-fairy-lights {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tree-fairy-lights-left {
+  background:
+    radial-gradient(circle 3px at 28% 45%, #fff0a0 100%, transparent),
+    radial-gradient(circle 3px at 38% 38%, #ffc040 100%, transparent),
+    radial-gradient(circle 3.5px at 48% 52%, #ffe080 100%, transparent),
+    radial-gradient(circle 2.5px at 60% 42%, #ffb030 100%, transparent),
+    radial-gradient(circle 3px at 70% 58%, #fff0a0 100%, transparent),
+    radial-gradient(circle 3.5px at 52% 68%, #ffd060 100%, transparent);
+  animation: fairyTwinkle 3.2s ease-in-out infinite alternate;
+}
+
+.tree-fairy-lights-right {
+  background:
+    radial-gradient(circle 3px at 72% 45%, #fff0a0 100%, transparent),
+    radial-gradient(circle 3px at 62% 38%, #ffc040 100%, transparent),
+    radial-gradient(circle 3.5px at 52% 52%, #ffe080 100%, transparent),
+    radial-gradient(circle 2.5px at 40% 42%, #ffb030 100%, transparent),
+    radial-gradient(circle 3px at 30% 58%, #fff0a0 100%, transparent),
+    radial-gradient(circle 3.5px at 48% 68%, #ffd060 100%, transparent);
+  animation: fairyTwinkle 3.6s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes fairyTwinkle {
+  0%   { opacity: 0.55; }
+  50%  { opacity: 1; filter: drop-shadow(0 0 6px rgba(255, 215, 110, 0.9)); }
+  100% { opacity: 0.65; }
+}
+
+/* Tree Hanging Lanterns */
+.tree-lantern {
+  position: absolute;
+  pointer-events: none;
+  transform-origin: 50% 0;
+  animation: treeLanternSwing 4.5s ease-in-out infinite alternate;
+}
+
+.tree-lantern-left-1 { left: 45%; top: 38%; animation-delay: 0.2s; }
+.tree-lantern-left-2 { left: 68%; top: 52%; animation-delay: 1.5s; }
+.tree-lantern-right-1 { right: 45%; top: 38%; animation-delay: 0.8s; }
+.tree-lantern-right-2 { right: 68%; top: 52%; animation-delay: 2.1s; }
+
+@keyframes treeLanternSwing {
+  0%   { transform: rotate(-4deg); }
+  50%  { transform: rotate(1deg); }
+  100% { transform: rotate(5deg); }
+}
+
+.lantern-cord {
+  width: 1.5px;
+  height: 38px;
+  background: #a37c35;
+  margin: 0 auto;
+}
+
+.lantern-cage {
+  width: 22px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1.5px solid #d4af37;
+  background: rgba(30, 15, 5, 0.6);
+  position: relative;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
+.lantern-flame {
+  position: absolute;
+  left: 6px;
+  top: 9px;
+  width: 8px;
+  height: 12px;
+  border-radius: 50% 50% 35% 35%;
+  background: radial-gradient(circle at 50% 70%, #ffffff 0%, #fff1a0 35%, #ff9500 75%, transparent 100%);
+  animation: flameFlicker 2s ease-in-out infinite alternate;
+}
+
+.lantern-glow {
+  position: absolute;
+  left: -24px;
+  top: -20px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 185, 60, 0.75) 0%, rgba(255, 120, 20, 0.3) 50%, transparent 75%);
+  filter: blur(8px);
+  animation: glowFlicker 2.5s ease-in-out infinite alternate;
+}
+
+/* =========================================================
+   6. Twilight Horizon Haze
+   ========================================================= */
+.evening-haze-band {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 8vh;
+  height: 42vh;
+  background:
+    radial-gradient(58% 52% at 28% 62%, rgba(55, 20, 50, 0.35), transparent 72%),
+    radial-gradient(52% 46% at 74% 56%, rgba(235, 120, 40, 0.22), transparent 72%);
+  animation: hazeDrift 40s ease-in-out infinite alternate;
+}
+
+@keyframes hazeDrift {
+  from { transform: translate3d(-3%, 0, 0); }
+  to   { transform: translate3d(3%, 0, 0); }
+}
+
+/* =========================================================
+   7. Grand Illuminated Bengali Mandap (Night Focus)
+   ========================================================= */
+.mandap-container {
+  position: absolute;
+  left: 50%;
+  bottom: var(--mandap-bottom);
+  width: var(--mandap-w);
+  margin-left: calc(var(--mandap-w) / -2);
+  transform-origin: 50% 100%;
+}
+
+.mandap-img {
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: block;
+  /* Night-time mandap lighting: luminous ivory, rich marigold, and warm candlelit drop-shadow */
+  filter: brightness(0.92) contrast(1.15) saturate(1.12) drop-shadow(0 0 35px rgba(255, 185, 75, 0.45)) drop-shadow(0 18px 36px rgba(10, 4, 18, 0.85));
+}
+
+.mandap-glow {
+  position: absolute;
+  left: 32%;
+  right: 32%;
+  top: 30%;
+  bottom: 25%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 215, 120, 0.35) 0%, rgba(240, 145, 40, 0.15) 60%, transparent 100%);
+  animation: glowBreath 6s ease-in-out infinite alternate;
+  filter: blur(10px);
+}
+
+@keyframes glowBreath {
+  from { opacity: 0.45; transform: scale(0.96); }
+  to   { opacity: 0.85; transform: scale(1.05); }
+}
+
+/* Mandap Fairy Light Dots */
+.mandap-fairy-lights {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fairy-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff8e0;
+  box-shadow: 0 0 10px #ffc840, 0 0 18px #ff9500;
+  animation: fairyDotTwinkle 2.4s ease-in-out infinite alternate;
+}
+
+.fd-1  { left: 34%; top: 32%; animation-delay: 0.2s; }
+.fd-2  { left: 40%; top: 22%; animation-delay: 0.7s; }
+.fd-3  { left: 50%; top: 16%; animation-delay: 1.1s; }
+.fd-4  { left: 60%; top: 22%; animation-delay: 0.4s; }
+.fd-5  { left: 66%; top: 32%; animation-delay: 0.9s; }
+.fd-6  { left: 31%; top: 52%; animation-delay: 1.3s; }
+.fd-7  { left: 69%; top: 52%; animation-delay: 0.6s; }
+.fd-8  { left: 33%; top: 72%; animation-delay: 1.5s; }
+.fd-9  { left: 67%; top: 72%; animation-delay: 0.8s; }
+.fd-10 { left: 44%; top: 36%; animation-delay: 1.8s; }
+.fd-11 { left: 56%; top: 36%; animation-delay: 0.3s; }
+.fd-12 { left: 50%; top: 40%; animation-delay: 1.0s; }
+
+@keyframes fairyDotTwinkle {
+  0%   { opacity: 0.4; transform: scale(0.8); }
+  50%  { opacity: 1; transform: scale(1.4); }
+  100% { opacity: 0.6; transform: scale(1.0); }
+}
+
+/* Mandap Hanging Lanterns */
+/* Mandap Hanging Lanterns with Wind Sway */
+.mandap-lantern {
+  position: absolute;
+  pointer-events: none;
+  transform-origin: 50% 0;
+  animation: lanternBreeze 4.8s ease-in-out infinite alternate;
+}
+
+.mandap-lantern-l { left: 24%; top: 26%; animation-delay: 0s; }
+.mandap-lantern-c { left: 48%; top: 20%; animation-delay: 1.4s; }
+.mandap-lantern-r { right: 24%; top: 26%; animation-delay: 0.7s; }
+
+@keyframes lanternBreeze {
+  0%   { transform: rotate(-3.5deg); }
+  50%  { transform: rotate(1deg); }
+  100% { transform: rotate(4deg); }
+}
+
+/* Wind-Billowing Royal Silk Drapes on Mandap Pillars */
+.mandap-silk-drape {
+  position: absolute;
+  top: 26%;
+  width: 9%;
+  height: 48%;
+  pointer-events: none;
+  z-index: 2;
+  overflow: visible;
+}
+
+.drape-left  { left: 22%; transform-origin: 0% 0%; }
+.drape-right { right: 22%; transform-origin: 100% 0%; }
+
+.silk-drape-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 6px 14px rgba(10, 4, 18, 0.65));
+}
+
+.drape-cloth-l {
+  animation: drapeFlutterL 4.5s ease-in-out infinite alternate;
+  transform-origin: 20% 0%;
+}
+
+.drape-cloth-r {
+  animation: drapeFlutterR 5.0s ease-in-out infinite alternate;
+  transform-origin: 80% 0%;
+}
+
+@keyframes drapeFlutterL {
+  0% {
+    transform: skewX(0deg) scaleX(1);
+  }
+  50% {
+    transform: skewX(-4deg) scaleX(1.08);
+  }
+  100% {
+    transform: skewX(3deg) scaleX(0.96);
+  }
+}
+
+@keyframes drapeFlutterR {
+  0% {
+    transform: skewX(0deg) scaleX(1);
+  }
+  50% {
+    transform: skewX(4deg) scaleX(1.08);
+  }
+  100% {
+    transform: skewX(-3deg) scaleX(0.96);
+  }
+}
+
+/* =========================================================
+   Sacred Havan Kund with Photorealistic Altar & Fluid Agni Fire
+   ========================================================= */
+.mandap-havan-kund {
+  position: absolute;
+  left: 50%;
+  bottom: 12.5%;
+  width: clamp(52px, 6.8vw, 76px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Hearth Firelight Floor Glow on Mandap Marble */
+.kund-hearth-glow {
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 140px;
+  height: 40px;
+  margin-left: -70px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 175, 45, 0.85) 0%, rgba(240, 85, 10, 0.42) 45%, transparent 75%);
+  filter: blur(10px);
+  animation: hearthGlowPulse 2.0s ease-in-out infinite alternate;
+}
+
+.kund-hearth-ambient {
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  width: 200px;
+  height: 60px;
+  margin-left: -100px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 140, 30, 0.35) 0%, rgba(220, 60, 5, 0.15) 55%, transparent 80%);
+  filter: blur(16px);
+  animation: hearthGlowPulse 2.8s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes hearthGlowPulse {
+  0%   { transform: scale(0.92); opacity: 0.75; }
+  50%  { transform: scale(1.08); opacity: 1.0; }
+  100% { transform: scale(0.96); opacity: 0.82; }
+}
+
+.havan-kund-real-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: brightness(0.96) contrast(1.15) saturate(1.12) drop-shadow(0 6px 14px rgba(10, 4, 2, 0.75));
+  position: relative;
+  z-index: 1;
+}
+
+/* 60fps Fluid Physical Fire Simulation Canvas */
+.kund-fire-stage {
+  position: absolute;
+  left: 50%;
+  bottom: 54%;
+  width: clamp(40px, 5.2vw, 58px);
+  height: clamp(50px, 6.5vw, 72px);
+  margin-left: calc(clamp(40px, 5.2vw, 58px) / -2);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.realistic-flame-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 0 10px #ff8800) drop-shadow(0 0 24px rgba(255, 60, 0, 0.7));
+}
+
+.mandap-lantern .lantern-body {
+  width: 18px;
+  height: 26px;
+  border-radius: 4px;
+  border: 1px solid #e0a93c;
+  background: rgba(35, 18, 6, 0.75);
+  position: relative;
+}
+
+.mandap-lantern .lantern-candle {
+  position: absolute;
+  left: 5px;
+  top: 7px;
+  width: 6px;
+  height: 10px;
+  border-radius: 50% 50% 35% 35%;
+  background: radial-gradient(circle at 50% 70%, #ffffff 0%, #ffeaa0 35%, #ff9500 80%, transparent 100%);
+  animation: flameFlicker 1.8s ease-in-out infinite alternate;
+}
+
+.mandap-lantern .lantern-glow {
+  position: absolute;
+  left: -18px;
+  top: -16px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 195, 75, 0.75) 0%, rgba(255, 120, 20, 0.28) 50%, transparent 75%);
+  filter: blur(6px);
+  animation: glowFlicker 2.2s ease-in-out infinite alternate;
+}
+
+/* Traditional Slender Ornate Brass Lamps (Samai) */
+.mandap-lamp-flank {
+  position: absolute;
+  bottom: 2%;
+  width: 32px;
+  height: 80px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.mandap-lamp-flank.lamp-left  { left: 23%; }
+.mandap-lamp-flank.lamp-right { right: 23%; }
+
+.ornate-samai-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.75));
+}
+
+.flame-cluster {
+  position: absolute;
+  inset: 0;
+}
+
+.mandap-lamp-flank .lamp-flame {
+  position: absolute;
+  width: 6px;
+  height: 10px;
+  border-radius: 50% 50% 35% 35%;
+  background: radial-gradient(circle at 50% 70%, #ffffff 0%, #fff2b2 35%, #ff9500 80%, transparent 100%);
+  filter: drop-shadow(0 0 6px #ffb300);
+  animation: flameFlicker 1.8s ease-in-out infinite alternate;
+}
+
+.mandap-lamp-flank .f-top { left: 13px; top: -6px; }
+.mandap-lamp-flank .f-mid { left: 13px; top: 28px; animation-delay: 0.3s; }
+.mandap-lamp-flank .f-low { left: 13px; top: 48px; animation-delay: 0.6s; }
+
+.mandap-lamp-flank .lamp-halo {
+  position: absolute;
+  left: -20px;
+  top: -10px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 195, 75, 0.5) 0%, rgba(255, 120, 20, 0.18) 50%, transparent 75%);
+  filter: blur(8px);
+  animation: glowFlicker 2.2s ease-in-out infinite alternate;
+}
+
+/* Mandap Golden Bokeh */
+.mandap-bokeh-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bokeh-orb {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 220, 130, 0.55) 0%, rgba(255, 165, 45, 0.2) 55%, transparent 75%);
+  filter: blur(3px);
+  animation: bokehDrift 10s ease-in-out infinite alternate;
+}
+
+.b-1 { left: 32%; top: 40%; width: 28px; height: 28px; animation-duration: 9s; }
+.b-2 { left: 64%; top: 35%; width: 34px; height: 34px; animation-duration: 11s; animation-delay: -3s; }
+.b-3 { left: 42%; top: 60%; width: 24px; height: 24px; animation-duration: 8s; animation-delay: -5s; }
+.b-4 { left: 58%; top: 55%; width: 30px; height: 30px; animation-duration: 12s; animation-delay: -2s; }
+.b-5 { left: 26%; top: 68%; width: 22px; height: 22px; animation-duration: 10s; animation-delay: -7s; }
+.b-6 { left: 72%; top: 66%; width: 26px; height: 26px; animation-duration: 13s; animation-delay: -4s; }
+
+@keyframes bokehDrift {
+  0%   { transform: translate(0, 0) scale(0.9); opacity: 0.4; }
+  50%  { transform: translate(6px, -14px) scale(1.2); opacity: 0.85; }
+  100% { transform: translate(-8px, 8px) scale(0.95); opacity: 0.45; }
+}
+
+/* =========================================================
+   8. Hanging Floral Branches with Micro-LED Fairy Lights
+   ========================================================= */
+.branch-anchor {
+  position: absolute;
+  top: -4vh;
+  width: var(--branch-w);
+}
+
+.branch-left  { left: -2vw;  transform-origin: 0 0; }
+.branch-right { right: -2vw; transform-origin: 100% 0; }
+
+.branch-sway {
+  transform-origin: inherit;
+}
+
+.branch-left .branch-sway  { transform-origin: 0 0;    animation: branchSwayLeft 7s ease-in-out infinite alternate; }
+.branch-right .branch-sway { transform-origin: 100% 0; animation: branchSwayRight 8.5s ease-in-out infinite alternate; }
+
+.branch-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* Night-time hanging floral grading */
+  filter: brightness(0.72) contrast(1.14) saturate(0.96) drop-shadow(0 10px 22px rgba(12, 4, 18, 0.8));
+}
+
+@keyframes branchSwayLeft {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(1.6deg); }
+}
+
+@keyframes branchSwayRight {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(-1.6deg); }
+}
+
+/* Micro Fairy Lights on Hanging Floral Garlands */
+.branch-fairy-lights {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.b-dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff8e8;
+  box-shadow: 0 0 8px #ffb300, 0 0 14px #ff8000;
+  animation: fairyDotTwinkle 2.8s ease-in-out infinite alternate;
+}
+
+.branch-fairy-left .bd-1 { left: 35%; top: 30%; animation-delay: 0.2s; }
+.branch-fairy-left .bd-2 { left: 52%; top: 48%; animation-delay: 0.7s; }
+.branch-fairy-left .bd-3 { left: 68%; top: 38%; animation-delay: 1.2s; }
+.branch-fairy-left .bd-4 { left: 78%; top: 62%; animation-delay: 0.5s; }
+.branch-fairy-left .bd-5 { left: 88%; top: 50%; animation-delay: 1.5s; }
+
+.branch-fairy-right .bd-1 { right: 35%; top: 30%; animation-delay: 0.4s; }
+.branch-fairy-right .bd-2 { right: 52%; top: 48%; animation-delay: 0.9s; }
+.branch-fairy-right .bd-3 { right: 68%; top: 38%; animation-delay: 1.4s; }
+.branch-fairy-right .bd-4 { right: 78%; top: 62%; animation-delay: 0.3s; }
+.branch-fairy-right .bd-5 { right: 88%; top: 50%; animation-delay: 1.1s; }
+
+/* =========================================================
+   9. Foreground Garden & Lotus Pond at Night
+   ========================================================= */
+.garden-container {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--garden-sink) * -1);
+  width: var(--garden-w);
+  margin-left: calc(var(--garden-w) / -2);
+  transform-origin: 50% 100%;
+}
+
+/* Photorealistic Indian Blue Peacock Foraging on Garden Grass */
+.realistic-peacock-station {
+  position: absolute;
+  left: max(16px, 3.5vw);
+  bottom: max(8px, 1.8vh);
+  width: clamp(140px, 20vw, 220px);
+  pointer-events: none;
+  z-index: 12;
+  filter: brightness(0.94) contrast(1.14) saturate(1.1) drop-shadow(0 8px 18px rgba(4, 2, 14, 0.85));
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .realistic-peacock-station {
+    left: 12px;
+    bottom: 1.2vh;
+    width: clamp(115px, 34vw, 155px);
+  }
+}
+
+.peacock-rig {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1130 / 705;
+}
+
+.peacock-part-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Soft ground contact shadow anchoring claws to grass */
+.peacock-contact-shadow {
+  position: absolute;
+  left: 14%;
+  bottom: 0.5%;
+  width: 25%;
+  height: 9%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(6, 3, 10, 0.72) 0%, rgba(10, 5, 14, 0.35) 45%, transparent 75%);
+  filter: blur(4px);
+  transform: rotate(-3deg);
+  z-index: 1;
+}
+
+/* Long iridescent tail train trailing naturally on the lawn */
+.peacock-part-tail {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transform-origin: 31% 62.4%;
+  animation: peacockTailBreeze 5.6s ease-in-out infinite;
+}
+
+@keyframes peacockTailBreeze {
+  0%, 100% {
+    transform: rotate(0deg) scale(1, 1);
+  }
+  25% {
+    transform: rotate(0.85deg) scale(0.995, 1.008) translateY(0.8px);
+  }
+  50% {
+    transform: rotate(-0.55deg) scale(1.005, 0.994) translateY(-0.4px);
+  }
+  75% {
+    transform: rotate(0.65deg) scale(1, 1.005) translateY(0.5px);
+  }
+}
+
+/* Stable grounded body, chest, wings, and stationary legs/feet */
+.peacock-part-body {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  transform-origin: 17.7% 96.5%;
+  animation: peacockBodyBreathe 4.4s ease-in-out infinite;
+}
+
+@keyframes peacockBodyBreathe {
+  0%, 100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.007, 1.011);
+  }
+}
+
+/* Articulated neck, head & crest with lifelike bird saccades & grazing dips */
+.peacock-part-head {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  transform-origin: 8.4% 35.5%;
+  animation: peacockHeadLifelike 9.2s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+}
+
+@keyframes peacockHeadLifelike {
+  /* 1. Alert, upright posture - watchful observation */
+  0%, 18% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  /* Saccadic curious glance left towards viewer */
+  21% {
+    transform: rotate(-3.5deg) translate(-1px, -2px);
+  }
+  /* Hold observation */
+  21.5%, 34% {
+    transform: rotate(-3deg) translate(-1px, -2px);
+  }
+  /* Return to center */
+  37% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  /* 2. Graceful downward dip towards grass & garden flowers */
+  42% {
+    transform: rotate(7deg) translate(0px, 3px);
+  }
+  /* First delicate peck at grass seed / petals */
+  46% {
+    transform: rotate(12deg) translate(1px, 6px);
+  }
+  49% {
+    transform: rotate(6deg) translate(0px, 2px);
+  }
+  /* Second gentle peck */
+  53% {
+    transform: rotate(13deg) translate(1px, 7px);
+  }
+  56% {
+    transform: rotate(7deg) translate(0px, 3px);
+  }
+  /* Third micro-nibble */
+  59% {
+    transform: rotate(11deg) translate(1px, 5px);
+  }
+  /* 3. Smooth, elegant rise back up to majestic posture */
+  66% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  /* Inward glance towards the illuminated mandap */
+  71%, 82% {
+    transform: rotate(-2deg) translate(0.5px, -1px);
+  }
+  /* Crest feather flutter */
+  84% {
+    transform: rotate(-0.5deg) translate(0, 0);
+  }
+  87% {
+    transform: rotate(-2deg) translate(0.5px, -1px);
+  }
+  /* Settle back to serene resting state */
+  92%, 100% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+}
+
+/* Shimmering iridescence catching evening candlelight and golden twilight */
+.peacock-sheen-overlay {
+  position: absolute;
+  left: 4%;
+  top: 14%;
+  width: 24%;
+  height: 42%;
+  border-radius: 40%;
+  pointer-events: none;
+  z-index: 5;
+  background: radial-gradient(ellipse at 40% 40%, rgba(90, 210, 255, 0.28) 0%, rgba(180, 140, 255, 0.12) 45%, transparent 72%);
+  mix-blend-mode: screen;
+  animation: peacockSheenSweep 6.2s ease-in-out infinite alternate;
+}
+
+@keyframes peacockSheenSweep {
+  0% {
+    opacity: 0.15;
+    transform: translateY(-3px) scale(0.92);
+  }
+  50% {
+    opacity: 0.52;
+    transform: translateY(2px) scale(1.06);
+  }
+  100% {
+    opacity: 0.22;
+    transform: translateY(-1px) scale(0.98);
+  }
+}
+
+.garden-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* Deep evening garden foliage grading */
+  filter: brightness(0.48) contrast(1.14) saturate(0.88) hue-rotate(-14deg) drop-shadow(0 -6px 16px rgba(10, 4, 18, 0.7));
+}
+
+/* Garden Pathway Glowing Diyas */
+.garden-diya {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.gd-1 { left: 22%; bottom: 12%; }
+.gd-2 { left: 38%; bottom: 8%; }
+.gd-3 { right: 38%; bottom: 8%; }
+.gd-4 { right: 22%; bottom: 12%; }
+
+.garden-diya .diya-flame {
+  position: absolute;
+  left: 6px;
+  top: -6px;
+  width: 8px;
+  height: 14px;
+  border-radius: 50% 50% 35% 35%;
+  background: radial-gradient(circle at 50% 70%, #ffffff 0%, #fff1a0 32%, #ff9500 75%, transparent 100%);
+  animation: flameFlicker 1.9s ease-in-out infinite alternate;
+}
+
+.garden-diya .diya-glow {
+  position: absolute;
+  left: -20px;
+  top: -24px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 185, 60, 0.7) 0%, rgba(255, 110, 20, 0.25) 50%, transparent 75%);
+  filter: blur(8px);
+  animation: glowFlicker 2.3s ease-in-out infinite alternate;
+}
+
+/* Lotus Pond */
+.lotus-fx {
+  position: absolute;
+  right: -3vw;
+  bottom: -1vh;
+  width: var(--lotus-w);
+  transform-origin: 100% 100%;
+}
+
+.lotus-container {
+  animation: lotusFloat 4.5s ease-in-out infinite alternate;
+}
+
+.lotus-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: brightness(0.56) contrast(1.18) saturate(1.08) drop-shadow(0 6px 16px rgba(10, 4, 18, 0.75));
+}
+
+@keyframes lotusFloat {
+  0%   { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-7px) rotate(1deg); }
+}
+
+/* Floating Lotus Diya with Water Ripple */
+.water-diya {
+  position: absolute;
+  left: 28%;
+  bottom: 14%;
+  width: 24px;
+  height: 24px;
+}
+
+.water-diya .diya-flame {
+  position: absolute;
+  left: 7px;
+  top: -6px;
+  width: 8px;
+  height: 14px;
+  border-radius: 50% 50% 35% 35%;
+  background: radial-gradient(circle at 50% 70%, #ffffff 0%, #fff1a0 35%, #ff9500 80%, transparent 100%);
+  animation: flameFlicker 2s ease-in-out infinite alternate;
+}
+
+.water-diya .diya-glow {
+  position: absolute;
+  left: -24px;
+  top: -24px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 185, 60, 0.75) 0%, rgba(255, 120, 20, 0.28) 50%, transparent 75%);
+  filter: blur(8px);
+}
+
+.water-ripple {
+  position: absolute;
+  left: -12px;
+  top: 4px;
+  width: 44px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 215, 130, 0.4);
+  animation: waterRipple 3s ease-out infinite;
+}
+
+@keyframes waterRipple {
+  0%   { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* =========================================================
+   10. Canvas Falling Petals
+   ========================================================= */
+.petal-canvas {
+  display: block;
+}
+
+/* =========================================================
+   11. Scene 6: Final Luxury Evening Wedding Invitation Card
+   ========================================================= */
+.daytime-invitation-copy {
+  position: absolute;
+  top: 4.5vh;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  padding: 0 16px;
+  will-change: transform, opacity;
+}
+
+.evening-card-backdrop {
+  position: relative;
+  /* Deep midnight navy and rich maroon translucent backdrop with antique gold border */
+  background: linear-gradient(
+    145deg,
+    rgba(10, 8, 22, 0.94) 0%,
+    rgba(25, 7, 18, 0.95) 50%,
+    rgba(12, 6, 20, 0.96) 100%
+  );
+  border: 1.5px solid rgba(224, 169, 60, 0.65);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.88),
+    0 0 35px rgba(224, 169, 60, 0.25),
+    inset 0 0 25px rgba(224, 169, 60, 0.1);
+  border-radius: 20px;
+  padding: clamp(16px, 2.8vh, 32px) clamp(20px, 4vw, 46px);
+  text-align: center;
+  color: #fff8ed;
+  max-width: clamp(320px, 88vw, 680px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Ornate Antique Gold Corner Flourishes */
+.card-gold-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: #e0a93c;
+  pointer-events: none;
+}
+
+.corner-tl { top: 8px; left: 8px; border-top: 2px solid #e0a93c; border-left: 2px solid #e0a93c; border-top-left-radius: 6px; }
+.corner-tr { top: 8px; right: 8px; border-top: 2px solid #e0a93c; border-right: 2px solid #e0a93c; border-top-right-radius: 6px; }
+.corner-bl { bottom: 8px; left: 8px; border-bottom: 2px solid #e0a93c; border-left: 2px solid #e0a93c; border-bottom-left-radius: 6px; }
+.corner-br { bottom: 8px; right: 8px; border-bottom: 2px solid #e0a93c; border-right: 2px solid #e0a93c; border-bottom-right-radius: 6px; }
+
+.invitation-inner-frame {
+  position: relative;
+  z-index: 1;
+}
+
+.invitation-eyebrow {
+  font-size: clamp(13px, 1.35vw, 16px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #e5c158;
+  font-weight: 500;
+  text-shadow: 0 1px 12px rgba(229, 193, 88, 0.4);
+  margin-bottom: 6px;
+}
+
+.invitation-flourish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 6px auto 10px;
+  color: #e0a93c;
+  max-width: 240px;
+  font-size: 13px;
+}
+
+.invitation-flourish hr {
+  flex: 1;
+  border: none;
+  border-top: 1px solid rgba(224, 169, 60, 0.5);
+  margin: 0;
+}
+
+/* Couple Names */
+.invitation-couple-names {
+  font-size: clamp(26px, 4.4vw, 52px);
+  line-height: 1.15;
+  font-weight: 400;
+  color: #fff9f0;
+  letter-spacing: 0.03em;
+  margin: 6px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-shadow: 0 2px 20px rgba(255, 230, 160, 0.35);
+}
+
+.invitation-couple-names .name-bride,
+.invitation-couple-names .name-groom {
+  color: #fff4dc;
+}
+
+.invitation-couple-names .ampersand {
+  font-size: 0.65em;
+  color: #e0a93c;
+  font-style: italic;
+  margin: -2px 0;
+}
+
+/* Parents Blessing Block */
+.invitation-parents-block {
+  margin: 8px 0 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.parents-line {
+  font-size: clamp(13px, 1.3vw, 16px);
+  color: #f7e7ce;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  opacity: 0.95;
+}
+
+.invitation-separator-small {
+  margin: 8px 0;
+  color: #d4af37;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+/* Date */
+.invitation-date-block {
+  margin: 4px 0 10px;
+}
+
+.invitation-date {
+  font-size: clamp(16px, 2vw, 24px);
+  font-weight: 600;
+  color: #ffd875;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 14px rgba(255, 216, 117, 0.35);
+}
+
+/* Shaadi and Reception Grid */
+.invitation-events-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 3vw, 24px);
+  margin: 8px auto 16px;
+  padding: 8px 16px;
+  background: rgba(224, 169, 60, 0.08);
+  border: 1px solid rgba(224, 169, 60, 0.25);
+  border-radius: 12px;
+  max-width: 480px;
+}
+
+.event-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: center;
+}
+
+.event-label {
+  font-size: clamp(11px, 1.15vw, 14px);
+  letter-spacing: 0.14em;
+  color: #f5d47a;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.event-time {
+  font-size: clamp(12px, 1.25vw, 15px);
+  color: #fff9f0;
+  letter-spacing: 0.04em;
+  font-style: italic;
+}
+
+.event-divider {
+  color: rgba(224, 169, 60, 0.4);
+  font-size: 20px;
+}
+
+/* Venue Highlight on Card */
+.invitation-venue-highlight {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 6px auto 14px;
+  padding: 6px 16px;
+  background: rgba(224, 169, 60, 0.12);
+  border: 1px solid rgba(224, 169, 60, 0.4);
+  border-radius: 20px;
+  font-size: clamp(12px, 1.25vw, 15px);
+  color: #ffd875;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
+  max-width: 92%;
+}
+
+.invitation-venue-highlight .venue-pin {
+  font-size: 15px;
+}
+
+.invitation-venue-highlight .venue-name {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Interactive Venue Directions Button */
+.invitation-action-wrap {
+  margin-top: 10px;
+  pointer-events: auto;
+}
+
+.btn-venue-directions {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: clamp(9px, 1.4vh, 13px) clamp(18px, 3vw, 28px);
+  background: linear-gradient(135deg, #a46d17 0%, #e0a93c 50%, #c98a28 100%);
+  border: 1px solid #ffd975;
+  border-radius: 30px;
+  color: #1a0802;
+  font-family: inherit;
+  font-size: clamp(11px, 1.1vw, 13.5px);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(224, 169, 60, 0.4);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.btn-venue-directions:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow:
+    0 8px 26px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(255, 215, 110, 0.65);
+  filter: brightness(1.08);
+}
+
+.btn-venue-directions:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-venue-directions .pin-icon {
+  flex-shrink: 0;
+}
+
+.btn-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  animation: btnShimmer 3.5s infinite;
+}
+
+@keyframes btnShimmer {
+  0%   { left: -100%; }
+  35%  { left: 200%; }
+  100% { left: 200%; }
+}
+
+/* Venue Directions Modal */
+.venue-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 5, 12, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.venue-modal-card {
+  position: relative;
+  background: linear-gradient(145deg, #120e22 0%, #25101c 100%);
+  border: 1.5px solid #d4af37;
+  border-radius: 18px;
+  padding: 32px 28px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.3);
+  color: #fff8ed;
+}
+
+.venue-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #e0a93c;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.venue-title {
+  font-size: 24px;
+  color: #ffd875;
+  margin-bottom: 6px;
+  font-weight: 400;
+}
+
+.venue-subtitle {
+  font-size: 14px;
+  color: #f7e7ce;
+  opacity: 0.9;
+}
+
+.venue-gold-divider {
+  width: 80px;
+  height: 1px;
+  background: #d4af37;
+  margin: 14px auto 18px;
+}
+
+.venue-details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 15px;
+  color: #fcefdc;
+  text-align: left;
+  background: rgba(224, 169, 60, 0.08);
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(224, 169, 60, 0.2);
+}
+
+.venue-address-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  background: rgba(224, 169, 60, 0.12);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(224, 169, 60, 0.35);
+}
+
+.venue-pin-large {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.venue-address {
+  margin: 0;
+  font-style: normal;
+  line-height: 1.4;
+  color: #ffd875;
+}
+
+.venue-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+  justify-content: center;
+}
+
+.btn-open-maps {
+  text-decoration: none;
+  padding: 10px 20px;
+  background: #d4af37;
+  color: #1a0802;
+  font-weight: 700;
+  border-radius: 20px;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.btn-open-maps:hover {
+  background: #f5d47a;
+  transform: translateY(-2px);
+}
+
+.btn-close-modal {
+  padding: 10px 20px;
+  background: transparent;
+  color: #f7e7ce;
+  border: 1px solid rgba(247, 231, 206, 0.4);
+  font-weight: 600;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Scroll-written reveal mechanism */
+.invitation-card-backdrop {
+  opacity: clamp(0, calc(var(--copy, 1) * 5), 1);
+  transform: scale(calc(0.96 + 0.04 * clamp(0, calc(var(--copy, 1) * 2), 1)));
+}
+
+.reveal-line {
+  --k: clamp(0, calc((var(--copy, 1) * 2.1 - 0.15 - var(--i, 0) * 0.17) * 3), 1);
+  opacity: var(--k);
+  transform: translate3d(0, calc((1 - var(--k)) * 16px), 0);
+}
+
+.reveal-blur {
+  filter: blur(calc((1 - var(--k)) * 7px));
+}
+
+/* =========================================================
+   12. Accessibility: prefers-reduced-motion
+   ========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .cloud-tier,
+  .flock-near,
+  .flock-far,
+  .birds-img,
+  .branch-sway,
+  .lotus-container,
+  .moonlight-beam-spin,
+  .mandap-glow,
+  .evening-mandap-spotlight,
+  .evening-haze-band,
+  .atmo-disc,
+  .bokeh-orb,
+  .fairy-dot,
+  .b-dot,
+  .tree-fairy-lights-left,
+  .tree-fairy-lights-right,
+  .sky-star,
+  .btn-shimmer,
+  .water-ripple {
+    animation: none !important;
+  }
+
+  .flock-near,
+  .flock-far {
+    opacity: 0 !important;
+  }
+
+  .static {
+    animation: none !important;
+  }
+}
+
+/* =========================================================
+   13. Responsive Adaptations
+   ========================================================= */
+@media (max-width: 768px) {
+  .daytime-invitation-copy {
+    top: 3.5vh;
+  }
+
+  .evening-card-backdrop {
+    padding: 16px 18px;
+  }
+
+  .invitation-events-grid {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .event-divider {
+    display: none;
+  }
+}
