@@ -5,7 +5,6 @@
   overflow: hidden;
   background: #090306;
   touch-action: pan-y;
-  will-change: transform, opacity;
 }
 
 /* Sunset Sky behind Temple Facade */
@@ -52,14 +51,12 @@
   perspective: 1700px;
   perspective-origin: 960px 540px;
   transform-style: preserve-3d;
-  will-change: transform;
 }
 
 .temple-layer {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
-  will-change: transform;
 }
 
 .temple-layer img {
@@ -73,13 +70,11 @@
 #deep {
   z-index: 1;
   transform-origin: 960px 593px;
-  will-change: transform;
 }
 
 #interior {
   z-index: 2;
   transform-origin: 960px 593px;
-  will-change: transform;
 }
 
 #facade {
@@ -87,7 +82,6 @@
   transform-origin: 960px 540px;
   transform-style: preserve-3d;
   perspective: 1300px;
-  will-change: transform;
 }
 
 #particles-canvas {
@@ -215,7 +209,6 @@
   mask-image: radial-gradient(circle at 50% 50%, black 0%, black 35%, transparent 70%);
   -webkit-mask-image: radial-gradient(circle at 50% 50%, black 0%, black 35%, transparent 70%);
   transform-origin: 50% 50%;
-  will-change: transform, opacity;
 }
 
 #glow {
@@ -228,7 +221,6 @@
   background: radial-gradient(circle at 50% 50%, rgba(255, 240, 190, 0.45) 0%, rgba(255, 185, 80, 0.2) 35%, transparent 68%);
   opacity: 0;
   transform-origin: 50% 50%;
-  will-change: transform, opacity;
   pointer-events: none;
 }
 
@@ -393,7 +385,6 @@
   width: 1920px;
   height: 1080px;
   transform-origin: 960px 780px;
-  will-change: transform, opacity;
 }
 
 #couple img {
@@ -408,7 +399,6 @@
   transform-origin: 960px 540px;
   transform-style: preserve-3d;
   perspective: 1300px;
-  will-change: transform;
 }
 
 #wall {
@@ -661,7 +651,6 @@
   height: 660px;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  will-change: transform;
 }
 
 .door img {
@@ -687,7 +676,6 @@
   height: 1080px;
   pointer-events: none;
   mix-blend-mode: screen;
-  will-change: transform;
 }
 
 #foreground {
@@ -695,7 +683,6 @@
   inset: 0;
   transform-origin: 960px 0;
   pointer-events: none;
-  will-change: transform, opacity;
   z-index: 4;
 }
 
@@ -708,7 +695,7 @@
 }
 
 #bell-l, #bell-r {
-  will-change: transform;
+  transform-origin: center top;
 }
 
 #bloom {

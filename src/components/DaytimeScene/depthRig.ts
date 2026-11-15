@@ -120,10 +120,11 @@ export function useDepthRig(
     if (!enabled) return;
 
     const s = state.current;
-    let vw = root.clientWidth || window.innerWidth;
+    const getContainerW = () => root.clientWidth || Math.min(window.innerWidth, 430);
+    let vw = getContainerW();
     let vh = root.clientHeight || window.innerHeight;
     const ro = new ResizeObserver(() => {
-      vw = root.clientWidth || window.innerWidth;
+      vw = getContainerW();
       vh = root.clientHeight || window.innerHeight;
     });
     ro.observe(root);
@@ -132,12 +133,18 @@ export function useDepthRig(
     let tx = 0;
     let ty = 0;
     const onPointer = (e: PointerEvent) => {
-      tx = clamp((e.clientX / window.innerWidth) * 2 - 1, -1, 1);
+      const stageW = getContainerW();
+      const stageLeft = (window.innerWidth - stageW) / 2;
+      const localX = e.clientX - stageLeft;
+      tx = clamp((localX / stageW) * 2 - 1, -1, 1);
       ty = clamp((e.clientY / window.innerHeight) * 2 - 1, -1, 1);
     };
     const onTouch = (e: TouchEvent) => {
       if (e.touches.length > 0) {
-        tx = clamp((e.touches[0].clientX / window.innerWidth) * 2 - 1, -1, 1);
+        const stageW = getContainerW();
+        const stageLeft = (window.innerWidth - stageW) / 2;
+        const localX = e.touches[0].clientX - stageLeft;
+        tx = clamp((localX / stageW) * 2 - 1, -1, 1);
         ty = clamp((e.touches[0].clientY / window.innerHeight) * 2 - 1, -1, 1);
       }
     };

@@ -60,8 +60,8 @@ export const InvitationCopy: React.FC = React.memo(() => {
             <div className="couple-person-block reveal-line reveal-blur" style={line(4)}>
               <h2 className="person-name name-bride">Pampa Manna</h2>
               <span className="relation-tag">D/o</span>
-              <p className="parent-name-line">Dipali Manna</p>
               <p className="parent-name-line">Samir Manna</p>
+              <p className="parent-name-line">Dipali Manna</p>
             </div>
           </div>
 

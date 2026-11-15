@@ -18,12 +18,42 @@
 }
 
 html, body {
-  background: var(--midnight);
+  background: #030409;
   min-height: 100vh;
+  min-height: 100dvh;
+  height: 100%;
+  width: 100%;
   font-family: var(--display);
   color: var(--cream);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  /* Hide scrollbar across all browsers while retaining touch & wheel scroll */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Luxury PC desktop backdrop outside mobile container */
+@media (min-width: 440px) {
+  body {
+    background: radial-gradient(ellipse at 50% 45%, #0e1326 0%, #060914 55%, #020307 100%);
+  }
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Stabilize images against GPU memory dropouts and texture flickering */
+img {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  transform: translateZ(0);
 }
 
 #scroll-track {
@@ -35,13 +65,20 @@ html, body {
   pointer-events: none;
 }
 
+/* Constrained to mobile width (max 430px) and centered on all displays including PC */
 .app-container {
   position: fixed;
-  inset: 0;
-  width: 100vw;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background-color: var(--midnight);
+  box-shadow: 0 0 70px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(212, 175, 55, 0.15);
 }
 
 .scene-stage-wrapper {
@@ -49,153 +86,15 @@ html, body {
   inset: 0;
   width: 100%;
   height: 100%;
-  will-change: opacity;
 }
 
-/* Chapter Navigation - Luxurious Evening Styling */
-.app-chapters {
-  position: absolute;
-  right: max(18px, 2.2vw);
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 50;
-}
-
-.app-chapters button {
-  all: unset;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  height: 32px;
-  padding: 0 6px;
-  font-size: 13px;
-  color: #f7e7ce;
-  letter-spacing: 0.06em;
-  transition: color 0.3s ease;
-}
-
-.app-chapters button span {
-  opacity: 0;
-  transform: translateX(8px);
-  transition: opacity 0.25s, transform 0.25s;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 0 12px rgba(224, 169, 60, 0.4);
-  white-space: nowrap;
-  font-weight: 500;
-}
-
-.app-chapters button i {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(247, 231, 206, 0.7);
-  background: transparent;
-  transition: background 0.25s, transform 0.25s, border-color 0.25s, box-shadow 0.25s;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
-}
-
-.app-chapters button:hover span,
-.app-chapters button:focus-visible span {
-  opacity: 1;
-  transform: none;
-  color: #ffd875;
-}
-
-.app-chapters button.active i {
-  background: #f59e0b;
-  border-color: #ffd875;
-  transform: scale(1.45);
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.9), 0 0 20px rgba(255, 216, 117, 0.6);
-}
-
-.app-chapters button.active span {
-  opacity: 1;
-  transform: none;
-  color: #ffd875;
-}
-
-@media (max-width: 640px) {
-  .app-chapters button span {
-    display: none;
-  }
-}
-
-/* Floating Cinematic Auto-Scroll Control Pill */
-.autoscroll-control {
-  position: fixed;
-  left: max(18px, 2.5vw);
-  bottom: max(18px, 2.5vh);
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(12, 20, 44, 0.78);
-  border: 1px solid rgba(224, 169, 60, 0.45);
-  border-radius: 30px;
-  padding: 8px 16px;
-  color: #fff8ed;
-  font-family: inherit;
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  cursor: pointer;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.65), inset 0 0 10px rgba(224, 169, 60, 0.1);
-  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  user-select: none;
-}
-
-.autoscroll-control:hover {
-  background: rgba(22, 34, 72, 0.92);
-  border-color: #ffd700;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.75), 0 0 16px rgba(245, 158, 11, 0.35);
-  transform: translateY(-2px);
-}
-
-.autoscroll-icon-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #d4af37 0%, #f59e0b 100%);
-  color: #060814;
-  font-size: 10px;
-  font-weight: 700;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
-}
-
-.autoscroll-control.active .autoscroll-icon-badge {
-  animation: badgePulse 2s infinite alternate;
-}
-
-@keyframes badgePulse {
-  0% { transform: scale(0.94); box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); }
-  100% { transform: scale(1.1); box-shadow: 0 0 14px rgba(255, 215, 0, 0.85); }
-}
-
-.autoscroll-label {
-  font-weight: 500;
-  color: #f7e7ce;
-}
-
-@media (max-width: 640px) {
-  .autoscroll-control {
-    left: 12px;
-    bottom: 14px;
-    padding: 6px 12px;
-    font-size: 11px;
-    gap: 8px;
-  }
-  .autoscroll-icon-badge {
-    width: 20px;
-    height: 20px;
-    font-size: 9px;
-  }
+/* Hide Netlify Badge and Card */
+#nl-badge,
+.nl-badge,
+#nl-card,
+.nl-card {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }

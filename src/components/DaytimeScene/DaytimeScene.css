@@ -7,7 +7,9 @@
   position: absolute;
   inset: 0;
   width: 100vw;
+  width: 100%;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   pointer-events: none;
   touch-action: pan-y;
@@ -21,14 +23,13 @@
 }
 
 .daytime-canvas-stage {
-  --stage-w: min(max(100vw, min(150vh, 140vw)), 177vh);
-  --mandap-w: calc(var(--stage-w) * 0.5);
-  --mandap-bottom: 11vh;
-  --trees-w: calc(var(--stage-w) * 0.78);
-  --branch-w: calc(var(--stage-w) * 0.42);
-  --garden-w: calc(var(--stage-w) * 1.08);
-  --garden-sink: 8vh;
-  --lotus-w: calc(var(--stage-w) * 0.34);
+  --mandap-w: 124%;
+  --mandap-bottom: 6vh;
+  --trees-w: 104%;
+  --branch-w: 84%;
+  --garden-w: 164%;
+  --garden-sink: 1vh;
+  --lotus-w: 56%;
 
   position: absolute;
   inset: 0;
@@ -38,28 +39,12 @@
   isolation: isolate;
 }
 
-@media (max-aspect-ratio: 1/1) {
-  .daytime-canvas-stage {
-    --mandap-w: 124vw;
-    --mandap-bottom: 6vh;
-    --trees-w: 104vw;
-    --branch-w: 84vw;
-    --garden-w: 164vw;
-    --garden-sink: 1vh;
-    --lotus-w: 56vw;
-  }
-}
-
 .daytime-layer {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-}
-
-[data-fx] {
-  will-change: transform;
 }
 
 /* z-index hierarchy */
@@ -185,7 +170,6 @@
   left: -30%;
   width: 160%;
   height: 42%;
-  will-change: transform;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 24%, #000 76%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0%, #000 24%, #000 76%, transparent 100%);
 }
@@ -383,8 +367,8 @@
   width: var(--trees-w);
 }
 
-.trees-left  { left: -4vw;  transform-origin: 0 100%; }
-.trees-right { right: -4vw; transform-origin: 100% 100%; }
+.trees-left  { left: -4%;  transform-origin: 0 100%; }
+.trees-right { right: -4%; transform-origin: 100% 100%; }
 
 /* Tree Wind Sway Animations */
 .tree-sway-wrapper {
@@ -893,8 +877,8 @@
   width: var(--branch-w);
 }
 
-.branch-left  { left: -2vw;  transform-origin: 0 0; }
-.branch-right { right: -2vw; transform-origin: 100% 0; }
+.branch-left  { left: -2%;  transform-origin: 0 0; }
+.branch-right { right: -2%; transform-origin: 100% 0; }
 
 .branch-sway {
   transform-origin: inherit;
@@ -965,20 +949,12 @@
 /* Photorealistic Indian Blue Peacock Foraging on Garden Grass */
 .realistic-peacock-station {
   position: absolute;
-  left: max(16px, 3.5vw);
-  bottom: max(8px, 1.8vh);
-  width: clamp(140px, 20vw, 220px);
+  left: 12px;
+  bottom: max(8px, 1.2vh);
+  width: clamp(115px, 32%, 150px);
   pointer-events: none;
   z-index: 12;
   filter: brightness(0.94) contrast(1.14) saturate(1.1) drop-shadow(0 8px 18px rgba(4, 2, 14, 0.85));
-}
-
-@media (max-aspect-ratio: 1/1) {
-  .realistic-peacock-station {
-    left: 12px;
-    bottom: 1.2vh;
-    width: clamp(115px, 34vw, 155px);
-  }
 }
 
 .peacock-rig {
@@ -1287,7 +1263,6 @@
   align-items: center;
   pointer-events: none;
   padding: 0 16px;
-  will-change: transform, opacity;
 }
 
 .evening-card-backdrop {

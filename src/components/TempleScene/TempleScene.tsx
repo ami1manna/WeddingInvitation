@@ -43,11 +43,12 @@ export const TempleScene: React.FC<TempleSceneProps> = React.memo(({
   localProgressRef.current = progress;
   const getProgress = () => (externalProgressRef ? externalProgressRef.current : localProgressRef.current);
 
-  // Responsive stage scaling (1920x1080 canvas fit)
+  // Responsive stage scaling (mobile-width canvas fit)
   useEffect(() => {
     const handleResize = () => {
       if (!worldRef.current) return;
-      const s = Math.max(window.innerWidth / 1920, window.innerHeight / 1080);
+      const stageW = Math.min(window.innerWidth, 430);
+      const s = Math.max(stageW / 1920, window.innerHeight / 1080);
       worldRef.current.style.setProperty('--s', s.toString());
     };
     handleResize();
@@ -62,13 +63,19 @@ export const TempleScene: React.FC<TempleSceneProps> = React.memo(({
     if (reducedMotion) return;
 
     const onPointerMove = (e: PointerEvent) => {
-      coordsRef.current.tmx = (e.clientX / window.innerWidth - 0.5) * 2;
+      const stageW = Math.min(window.innerWidth, 430);
+      const stageLeft = (window.innerWidth - stageW) / 2;
+      const localX = e.clientX - stageLeft;
+      coordsRef.current.tmx = Math.max(-1, Math.min(1, (localX / stageW - 0.5) * 2));
       coordsRef.current.tmy = (e.clientY / window.innerHeight - 0.5) * 2;
     };
 
     const onTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
-        coordsRef.current.tmx = (e.touches[0].clientX / window.innerWidth - 0.5) * 2;
+        const stageW = Math.min(window.innerWidth, 430);
+        const stageLeft = (window.innerWidth - stageW) / 2;
+        const localX = e.touches[0].clientX - stageLeft;
+        coordsRef.current.tmx = Math.max(-1, Math.min(1, (localX / stageW - 0.5) * 2));
         coordsRef.current.tmy = (e.touches[0].clientY / window.innerHeight - 0.5) * 2;
       }
     };
@@ -151,18 +158,17 @@ export const TempleScene: React.FC<TempleSceneProps> = React.memo(({
         worldRef.current.style.transform = `scale(var(--s,1)) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
       }
 
-      // 2. Foreground entrance (Bells & Garland)
-      const fgVis = p < 0.45;
+      // 2. Foreground entrance (Bells & Garland) - smooth fade without sudden pop
+      const fgOp = Math.max(0, 1 - smooth(seg(p, 0.18, 0.40)));
       if (foregroundRef.current) {
-        foregroundRef.current.style.visibility = fgVis ? 'visible' : 'hidden';
-        if (fgVis) {
+        foregroundRef.current.style.opacity = fgOp.toFixed(3);
+        foregroundRef.current.style.visibility = fgOp > 0.005 ? 'visible' : 'hidden';
+        if (fgOp > 0.005) {
           const fgScale = 1 + 1.55 * smooth(seg(p, 0, 0.35));
           const fgLift = -140 * smooth(seg(p, 0.05, 0.35));
           const fgTx = -px * 44;
           const fgTy = -py * 28 + fgLift;
-          const fgOp = 1 - smooth(seg(p, 0.20, 0.38));
           foregroundRef.current.style.transform = `translate(${fgTx.toFixed(2)}px,${fgTy.toFixed(2)}px) scale(${fgScale.toFixed(4)})`;
-          foregroundRef.current.style.opacity = fgOp.toFixed(3);
 
           if (bellLRef.current && bellRRef.current) {
             const sway = Math.sin(time * 2.6) * 1.8;
@@ -172,13 +178,13 @@ export const TempleScene: React.FC<TempleSceneProps> = React.memo(({
         }
       }
 
-      // 3. Facade & 3D Doors
-      const fv = p < 0.52;
+      // 3. Facade & 3D Doors - smooth fade without sudden pop
+      const fade = Math.max(0, 1 - seg(p, 0.26, 0.46));
       if (facadeRef.current) {
-        facadeRef.current.style.visibility = fv ? 'visible' : 'hidden';
-        if (fv) {
+        facadeRef.current.style.opacity = fade.toFixed(3);
+        facadeRef.current.style.visibility = fade > 0.005 ? 'visible' : 'hidden';
+        if (fade > 0.005) {
           const F = 1 + smooth(seg(p, 0, 0.5)) * 3.9;
-          const fade = 1 - seg(p, 0.28, 0.44);
           facadeRef.current.style.transform = `translate(${(-px * 24 * fade).toFixed(2)}px,${(-py * 16 * fade).toFixed(2)}px) scale(${F.toFixed(4)})`;
 
           const a = 84 * inOut(seg(p, 0.10, 0.30));
@@ -204,13 +210,13 @@ export const TempleScene: React.FC<TempleSceneProps> = React.memo(({
         deepRef.current.style.transform = `translate(${(-px * 6).toFixed(2)}px,${(-py * 4 + lift * 0.85).toFixed(2)}px) scale(${dScale})`;
       }
 
-      // 5. Couple & Sanctum Light (No excessive zoom - perfectly framed within sanctum arch)
+      // 5. Couple & Sanctum Light - Stable framing, never suddenly drops or disappears
       if (coupleRef.current) {
         const kc = 0.96 + smooth(seg(p, 0.35, 0.72)) * 0.12;
-        const co = p < 0.88 ? 1 : Math.max(0, 1 - (p - 0.88) / 0.12);
         const hover = Math.sin(time * 1.7) * 2.5;
         coupleRef.current.style.transform = `translate(${(-px * 4).toFixed(2)}px,${(-py * 2.5 + hover).toFixed(2)}px) scale(${kc.toFixed(4)})`;
-        coupleRef.current.style.opacity = co.toFixed(3);
+        coupleRef.current.style.opacity = '1';
+        coupleRef.current.style.visibility = 'visible';
       }
 
       if (godraysRef.current) {

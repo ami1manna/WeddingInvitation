@@ -6,7 +6,7 @@ window.CONTENT = {
   groom: "Swaroop Samanta",
   bride: "Pampa Manna",
   groomParents: "S/o Nobin Samanta & Dipali Samanta",
-  brideParents: "D/o Dipali Manna & Samir Manna",
+  brideParents: "D/o Samir Manna & Dipali Manna",
   date: "22 February 2027",
   ceremony: "SHAADI CEREMONY",
   ceremonyTime: "5:00 PM onwards",

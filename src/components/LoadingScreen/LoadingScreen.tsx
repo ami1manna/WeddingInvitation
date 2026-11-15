@@ -12,13 +12,11 @@ interface LoadingScreenProps {
 }
 
 const ALL_ASSETS: string[] = [
-  // Temple Scene
   facadeImg,
   doorLeftImg,
   doorRightImg,
   interiorImg,
   coupleImg,
-  // Evening Mandap & Garden Scene
   DAYTIME_ASSETS.sky,
   DAYTIME_ASSETS.clouds,
   DAYTIME_ASSETS.birds,
@@ -37,13 +35,24 @@ const ALL_ASSETS: string[] = [
 
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoaded }) => {
   const [percent, setPercent] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     let loadedCount = 0;
     const total = ALL_ASSETS.length;
+
+    const finishLoading = () => {
+      if (!mounted) return;
+      setPercent(100);
+      setTimeout(() => {
+        if (!mounted) return;
+        setFadeOut(true);
+        setTimeout(() => {
+          if (mounted) onLoaded();
+        }, 400);
+      }, 200);
+    };
 
     const updateProgress = () => {
       if (!mounted) return;
@@ -52,32 +61,17 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoaded }) => {
       setPercent(prev => Math.max(prev, targetPercent));
 
       if (loadedCount >= total) {
-        setPercent(100);
-        setTimeout(() => {
-          if (mounted) {
-            setIsComplete(true);
-            setTimeout(() => {
-              if (mounted) {
-                setFadeOut(true);
-                setTimeout(() => {
-                  if (mounted) onLoaded();
-                }, 850);
-              }
-            }, 500);
-          }
-        }, 300);
+        finishLoading();
       }
     };
 
-    // Preload & GPU-decode every asset simultaneously
+    // Preload & GPU-decode assets
     ALL_ASSETS.forEach(src => {
       const img = new Image();
       img.src = src;
       img.onload = () => {
         if ('decode' in img && typeof img.decode === 'function') {
-          img.decode()
-            .then(updateProgress)
-            .catch(updateProgress);
+          img.decode().then(updateProgress).catch(updateProgress);
         } else {
           updateProgress();
         }
@@ -85,15 +79,12 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoaded }) => {
       img.onerror = updateProgress;
     });
 
-    // Safety fallback: Ensure entrance is never blocked if an asset hangs
+    // Fallback timer: Never block if an asset hangs
     const safetyTimer = setTimeout(() => {
-      if (mounted && loadedCount < total) {
-        setPercent(100);
-        setIsComplete(true);
-        setFadeOut(true);
-        setTimeout(onLoaded, 850);
+      if (mounted) {
+        finishLoading();
       }
-    }, 9000);
+    }, 5000);
 
     return () => {
       mounted = false;
@@ -101,79 +92,27 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoaded }) => {
     };
   }, [onLoaded]);
 
-  // Contextual traditional message
-  const getStatusText = () => {
-    if (percent < 25) return 'Welcoming Auspicious Beginnings...';
-    if (percent < 55) return 'Illuminating Temple Sanctum & Sacred Bells...';
-    if (percent < 85) return 'Adorning Royal Mandap & Fragrant Flowers...';
-    if (percent < 100) return 'Kindling Sacred Agni & Evening Diyas...';
-    return 'Entering the Wedding Celebration...';
-  };
-
   return (
     <div
       className={`wedding-loader-overlay ${fadeOut ? 'loader-fade-out' : ''}`}
       aria-live="polite"
-      aria-label="Loading wedding celebration experience"
+      aria-label="Loading wedding invitation"
     >
       <div className="loader-backdrop-glow" />
 
-      {/* Floating Golden Sparks */}
-      <div className="loader-sparks" aria-hidden="true">
-        <span className="ls-dot ls-1" />
-        <span className="ls-dot ls-2" />
-        <span className="ls-dot ls-3" />
-        <span className="ls-dot ls-4" />
-        <span className="ls-dot ls-5" />
-        <span className="ls-dot ls-6" />
-      </div>
+      <div className="loader-simple-content">
+        <h1 className="loader-simple-names">Swaroop &amp; Pampa</h1>
+        <p className="loader-simple-subtitle">Wedding Celebration</p>
 
-      <div className="loader-content">
-        {/* Sacred Sanskrit Invocation */}
-        <div className="loader-invocation" aria-hidden="true">
-          <span className="loader-om-motif">ॐ</span>
-          <p className="loader-sanskrit">॥ श्री गणेशाय नमः ॥</p>
-        </div>
-
-        {/* Couple & Date Header */}
-        <h1 className="loader-couple-title">
-          <span className="loader-groom">Swaroop Samanta</span>
-          <span className="loader-ampersand">&amp;</span>
-          <span className="loader-bride">Pampa Manna</span>
-        </h1>
-        <p className="loader-wedding-date">22 FEBRUARY 2027</p>
-
-        {/* Auspicious Diya with Flickering Agni Flame */}
-        <div className="loader-diya-stage" aria-hidden="true">
-          <div className="loader-diya-glow" />
-          <div className="loader-diya-flame" />
-          <div className="loader-diya-bowl" />
-        </div>
-
-        {/* Luxury Gold Filigree Progress Bar */}
-        <div className="loader-progress-card">
-          <div className="loader-bar-track">
+        <div className="loader-simple-progress-container">
+          <div className="loader-simple-track">
             <div
-              className="loader-bar-fill"
+              className="loader-simple-bar"
               style={{ width: `${percent}%` }}
             />
-            <div
-              className="loader-bar-shimmer"
-              style={{ left: `${Math.max(0, percent - 15)}%` }}
-            />
           </div>
-
-          <div className="loader-progress-meta">
-            <span className="loader-status-msg">{getStatusText()}</span>
-            <span className="loader-percent-num">{percent}%</span>
-          </div>
+          <span className="loader-simple-percent">{percent}%</span>
         </div>
-
-        {isComplete && (
-          <p className="loader-enter-hint animate-fade-in">
-            Scroll to begin the journey
-          </p>
-        )}
       </div>
     </div>
   );

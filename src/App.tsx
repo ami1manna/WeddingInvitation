@@ -4,32 +4,20 @@ import { DaytimeScene } from './components/DaytimeScene/DaytimeScene';
 import { LoadingScreen } from './components/LoadingScreen/LoadingScreen';
 import './App.css';
 
-interface Chapter {
-  at: number;
-  label: string;
-}
-
-const CHAPTERS: Chapter[] = [
-  { at: 0.00, label: 'Temple Entrance' },
-  { at: 0.20, label: 'Carved Doors' },
-  { at: 0.45, label: 'Divine Blessings' },
-  { at: 0.72, label: 'Twilight Mandap' },
-  { at: 0.98, label: 'Wedding Invitation' }
-];
-
 export const App: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [activeChapter, setActiveChapter] = useState(0);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
 
-  const isAutoScrollingRef = useRef(true);
   const templeProgressRef = useRef(0);
   const eveningProgressRef = useRef(0);
-  const activeChapterRef = useRef(0);
 
   const templeWrapperRef = useRef<HTMLDivElement>(null);
   const eveningWrapperRef = useRef<HTMLDivElement>(null);
+
+  const isAutoScrollingRef = useRef(true);
+  const userInteractingRef = useRef(false);
+  const resumeTimerRef = useRef<number | null>(null);
+  const scrollPosRef = useRef(0);
 
   // Detect accessibility preference for reduced motion
   useEffect(() => {
@@ -40,54 +28,55 @@ export const App: React.FC = () => {
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
-  // Activate default auto-scroll after initial load
+  // Natural interaction handler: Pause auto-scroll while user touches or scrolls manually
   useEffect(() => {
-    if (isLoaded) {
-      const timer = setTimeout(() => {
-        isAutoScrollingRef.current = true;
-        setIsAutoScrolling(true);
-      }, 1200);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoaded]);
+    if (!isLoaded) return;
 
-  // Pause auto-scroll on direct manual user interaction (wheel, touch, drag)
-  useEffect(() => {
-    const pauseOnInteraction = (e?: Event) => {
-      if (e && e.target) {
-        const targetEl = e.target as HTMLElement;
-        if (
-          targetEl.closest('.autoscroll-control') ||
-          targetEl.closest('.app-chapters') ||
-          targetEl.closest('.venue-modal-overlay') ||
-          targetEl.closest('.btn-venue-directions')
-        ) {
-          return;
+    // Start auto-scroll shortly after load
+    const startTimer = window.setTimeout(() => {
+      isAutoScrollingRef.current = true;
+      scrollPosRef.current = window.scrollY;
+    }, 800);
+
+    const onUserInteraction = () => {
+      isAutoScrollingRef.current = false;
+      userInteractingRef.current = true;
+      scrollPosRef.current = window.scrollY;
+
+      if (resumeTimerRef.current) {
+        window.clearTimeout(resumeTimerRef.current);
+      }
+
+      // Resume auto-scroll 2.5s after user stops touching or scrolling
+      resumeTimerRef.current = window.setTimeout(() => {
+        userInteractingRef.current = false;
+        scrollPosRef.current = window.scrollY;
+        const maxS = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        if (window.scrollY < maxS * 0.98) {
+          isAutoScrollingRef.current = true;
         }
-      }
-      if (isAutoScrollingRef.current) {
-        isAutoScrollingRef.current = false;
-        setIsAutoScrolling(false);
-      }
+      }, 2500);
     };
 
-    window.addEventListener('wheel', pauseOnInteraction, { passive: true });
-    window.addEventListener('touchstart', pauseOnInteraction, { passive: true });
-    window.addEventListener('pointerdown', pauseOnInteraction, { passive: true });
+    window.addEventListener('wheel', onUserInteraction, { passive: true });
+    window.addEventListener('touchstart', onUserInteraction, { passive: true });
+    window.addEventListener('pointerdown', onUserInteraction, { passive: true });
     window.addEventListener('keydown', (e) => {
       if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Space'].includes(e.code)) {
-        pauseOnInteraction();
+        onUserInteraction();
       }
     }, { passive: true });
 
     return () => {
-      window.removeEventListener('wheel', pauseOnInteraction);
-      window.removeEventListener('touchstart', pauseOnInteraction);
-      window.removeEventListener('pointerdown', pauseOnInteraction);
+      window.clearTimeout(startTimer);
+      if (resumeTimerRef.current) window.clearTimeout(resumeTimerRef.current);
+      window.removeEventListener('wheel', onUserInteraction);
+      window.removeEventListener('touchstart', onUserInteraction);
+      window.removeEventListener('pointerdown', onUserInteraction);
     };
-  }, []);
+  }, [isLoaded]);
 
-  // Butter-smooth frame-rate independent physics engine with default auto-scroll
+  // Butter-smooth frame-rate independent physics engine with auto-scroll
   useEffect(() => {
     let animId: number;
     let target = 0;
@@ -97,6 +86,9 @@ export const App: React.FC = () => {
     const maxScroll = () => Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
 
     const onScroll = () => {
+      if (userInteractingRef.current) {
+        scrollPosRef.current = window.scrollY;
+      }
       target = Math.min(1, Math.max(0, window.scrollY / maxScroll()));
     };
 
@@ -106,49 +98,50 @@ export const App: React.FC = () => {
       const dt = Math.min(0.05, (now - lastTime) / 1000);
       lastTime = now;
 
-      // Cinematic Default Auto-Scroll (faster, brisk cinematic pace: ~26 seconds total)
-      if (isAutoScrollingRef.current && isLoaded) {
-        const maxS = maxScroll();
-        if (window.scrollY < maxS * 0.985) {
-          const scrollSpeed = maxS / 26;
-          const nextY = Math.min(maxS * 0.985, window.scrollY + scrollSpeed * dt);
-          window.scrollTo(0, nextY);
-          target = nextY / maxS;
+      const maxS = maxScroll();
+
+      // Fluid, continuous subpixel auto-scroll (~30s cinematic full walkthrough)
+      if (isAutoScrollingRef.current && isLoaded && !userInteractingRef.current) {
+        if (scrollPosRef.current < maxS * 0.985) {
+          const scrollSpeed = maxS / 30;
+          scrollPosRef.current += scrollSpeed * dt;
+          if (scrollPosRef.current >= maxS * 0.985) {
+            scrollPosRef.current = maxS * 0.985;
+            isAutoScrollingRef.current = false;
+          }
+          window.scrollTo(0, scrollPosRef.current);
+          target = scrollPosRef.current / maxS;
         } else {
-          // Reached final wedding invitation section - pause smoothly
           isAutoScrollingRef.current = false;
-          setIsAutoScrolling(false);
         }
       }
 
-      // Exponential smoothing normalized to time delta
-      // Faster, responsive tracking with silky-smooth damping
+      // Responsive tracking with silky-smooth damping
       const k = reducedMotion ? 1 : 1 - Math.exp(-dt * 15.0);
       current += (target - current) * k;
       if (Math.abs(target - current) < 1e-5) current = target;
 
-      // Temple scene progress runs across current: 0.00 to 0.52
-      const tProg = Math.min(1, current / 0.48);
+      // Temple scene progress runs across current: 0.00 to 0.50
+      const tProg = Math.min(1, current / 0.50);
 
-      // Evening Mandap progress runs across current: 0.46 to 1.00
-      const eProg = Math.max(0, Math.min(1, (current - 0.46) / 0.54));
+      // Evening Mandap progress runs across current: 0.45 to 1.00
+      const eProg = Math.max(0, Math.min(1, (current - 0.45) / 0.55));
 
       templeProgressRef.current = tProg;
       eveningProgressRef.current = eProg;
 
-      // Equal-power smooth Hermite crossfade between 0.46 and 0.56
-      // Snappy and fluid transition with continuous combined opacity
+      // Continuous, smooth crossfade between 0.45 and 0.55 without sudden cuts
       let tOp = 1;
       let eOp = 0;
 
-      if (current <= 0.46) {
+      if (current <= 0.45) {
         tOp = 1;
         eOp = 0;
-      } else if (current >= 0.56) {
+      } else if (current >= 0.55) {
         tOp = 0;
         eOp = 1;
       } else {
-        const t = (current - 0.46) / 0.10;
+        const t = (current - 0.45) / 0.10;
         const s = t * t * (3 - 2 * t);
         tOp = 1 - s;
         eOp = s;
@@ -156,26 +149,11 @@ export const App: React.FC = () => {
 
       if (templeWrapperRef.current) {
         templeWrapperRef.current.style.opacity = tOp.toFixed(3);
-        templeWrapperRef.current.style.visibility = tOp > 0 ? 'visible' : 'hidden';
+        templeWrapperRef.current.style.visibility = tOp > 0.005 ? 'visible' : 'hidden';
       }
       if (eveningWrapperRef.current) {
         eveningWrapperRef.current.style.opacity = eOp.toFixed(3);
-        eveningWrapperRef.current.style.visibility = eOp > 0 ? 'visible' : 'hidden';
-      }
-
-      // Identify active chapter ONLY when index changes (0 virtual DOM overhead during scroll)
-      let closestIdx = 0;
-      let minDiff = 999;
-      CHAPTERS.forEach((ch, idx) => {
-        const diff = Math.abs(ch.at - current);
-        if (diff < minDiff) {
-          minDiff = diff;
-          closestIdx = idx;
-        }
-      });
-      if (closestIdx !== activeChapterRef.current) {
-        activeChapterRef.current = closestIdx;
-        setActiveChapter(closestIdx);
+        eveningWrapperRef.current.style.visibility = eOp > 0.005 ? 'visible' : 'hidden';
       }
 
       animId = requestAnimationFrame(loop);
@@ -188,35 +166,6 @@ export const App: React.FC = () => {
       cancelAnimationFrame(animId);
     };
   }, [reducedMotion, isLoaded]);
-
-  const scrollToChapter = (at: number) => {
-    isAutoScrollingRef.current = false;
-    setIsAutoScrolling(false);
-    const maxS = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    window.scrollTo({
-      top: at * maxS,
-      behavior: reducedMotion ? 'auto' : 'smooth'
-    });
-  };
-
-  const toggleAutoScroll = () => {
-    const maxS = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    if (!isAutoScrolling) {
-      if (window.scrollY >= maxS * 0.92) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => {
-          isAutoScrollingRef.current = true;
-          setIsAutoScrolling(true);
-        }, 800);
-      } else {
-        isAutoScrollingRef.current = true;
-        setIsAutoScrolling(true);
-      }
-    } else {
-      isAutoScrollingRef.current = false;
-      setIsAutoScrolling(false);
-    }
-  };
 
   return (
     <>
@@ -246,42 +195,6 @@ export const App: React.FC = () => {
             reducedMotion={reducedMotion}
           />
         </div>
-
-        {/* Floating Chapter Navigation */}
-        <nav
-          className="app-chapters"
-          aria-label="Wedding Invitation Scene Chapters"
-        >
-          {CHAPTERS.map((ch, idx) => (
-            <button
-              key={ch.label}
-              type="button"
-              className={activeChapter === idx ? 'active' : ''}
-              onClick={() => scrollToChapter(ch.at)}
-              aria-label={ch.label}
-            >
-              <span>{ch.label}</span>
-              <i />
-            </button>
-          ))}
-        </nav>
-
-        {/* Floating Cinematic Auto-Scroll Control Pill */}
-        {isLoaded && (
-          <button
-            type="button"
-            className={`autoscroll-control ${isAutoScrolling ? 'active' : ''}`}
-            onClick={toggleAutoScroll}
-            aria-label={isAutoScrolling ? 'Pause auto scroll' : 'Resume auto scroll'}
-          >
-            <span className="autoscroll-icon-badge" aria-hidden="true">
-              {isAutoScrolling ? '❚❚' : '▶'}
-            </span>
-            <span className="autoscroll-label">
-              {isAutoScrolling ? 'Auto Scrolling' : 'Auto Scroll'}
-            </span>
-          </button>
-        )}
       </main>
     </>
   );
