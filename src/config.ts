@@ -3,7 +3,7 @@ export const WEDDING = {
   eyebrow: 'WEDDING INVITATION',
   bride: 'Pampa Manna',
   groom: 'Swaroop Samanta',
-  brideParents: 'D/o Samir Manna & Dipali Manna',
+  brideParents: 'D/o Dipali Manna & Samir Manna',
   groomParents: 'S/o Nobin Samanta & Dipali Samanta',
   date: '22 February 2027',
   shaadi: { title: 'SHAADI CEREMONY', time: '5:00 PM onwards' },

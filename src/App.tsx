@@ -1,51 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TempleScene } from './components/TempleScene/TempleScene';
-import { DaytimeScene } from './components/DaytimeScene/DaytimeScene';
-import { LoadingScreen } from './components/LoadingScreen/LoadingScreen';
+import { EveningScene } from './components/EveningScene/EveningScene';
 import './App.css';
 
+interface Chapter {
+  at: number;
+  label: string;
+}
+
+const CHAPTERS: Chapter[] = [
+  { at: 0.0, label: 'Golden Hour Entrance' },
+  { at: 0.14, label: 'Doors Opening' },
+  { at: 0.54, label: 'Shiva & Parvati Blessings' },
+  { at: 0.76, label: 'Twilight Garden' },
+  { at: 0.88, label: 'Illuminated Mandap' },
+  { at: 1.0, label: 'Wedding Invitation' }
+];
+
 export const App: React.FC = () => {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [templeActive, setTempleActive] = useState(true);
-  const [eveningActive, setEveningActive] = useState(false);
-
-  const templeActiveRef = useRef(true);
-  const eveningActiveRef = useRef(false);
-
-  const stableVhRef = useRef(typeof window !== 'undefined' ? window.innerHeight : 800);
-
-  const templeProgressRef = useRef(0);
-  const eveningProgressRef = useRef(0);
-
-  const templeWrapperRef = useRef<HTMLDivElement>(null);
-  const eveningWrapperRef = useRef<HTMLDivElement>(null);
-
-  const isAutoScrollingRef = useRef(true);
-  const userInteractingRef = useRef(false);
-  const resumeTimerRef = useRef<number | null>(null);
-  const scrollPosRef = useRef(0);
-
-  // Lock stage and scroll maths to a stable viewport height (prevent mobile URL bar jump)
-  useEffect(() => {
-    const updateStableVh = () => {
-      const vh = window.innerHeight;
-      stableVhRef.current = vh;
-      document.documentElement.style.setProperty('--stable-vh', `${vh}px`);
-    };
-    updateStableVh();
-    window.addEventListener('orientationchange', updateStableVh);
-    const onResize = () => {
-      if (Math.abs(window.innerHeight - stableVhRef.current) > 150 || window.innerWidth > 600) {
-        updateStableVh();
-      }
-    };
-    window.addEventListener('resize', onResize);
-    return () => {
-      window.removeEventListener('orientationchange', updateStableVh);
-      window.removeEventListener('resize', onResize);
-    };
-  }, []);
+  const [activeChapter, setActiveChapter] = useState(0);
 
   // Detect accessibility preference for reduced motion
   useEffect(() => {
@@ -56,145 +31,38 @@ export const App: React.FC = () => {
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
-  // Natural interaction handler: Pause auto-scroll while user touches or scrolls manually
-  useEffect(() => {
-    if (!isLoaded) return;
-
-    // Start auto-scroll shortly after load
-    const startTimer = window.setTimeout(() => {
-      isAutoScrollingRef.current = true;
-      scrollPosRef.current = window.scrollY;
-    }, 800);
-
-    const onUserInteraction = () => {
-      isAutoScrollingRef.current = false;
-      userInteractingRef.current = true;
-      scrollPosRef.current = window.scrollY;
-
-      if (resumeTimerRef.current) {
-        window.clearTimeout(resumeTimerRef.current);
-      }
-
-      // Resume auto-scroll 2.5s after user stops touching or scrolling
-      resumeTimerRef.current = window.setTimeout(() => {
-        userInteractingRef.current = false;
-        scrollPosRef.current = window.scrollY;
-        const maxS = Math.max(1, document.documentElement.scrollHeight - stableVhRef.current);
-        if (window.scrollY < maxS * 0.98) {
-          isAutoScrollingRef.current = true;
-        }
-      }, 2500);
-    };
-
-    window.addEventListener('wheel', onUserInteraction, { passive: true });
-    window.addEventListener('touchstart', onUserInteraction, { passive: true });
-    window.addEventListener('pointerdown', onUserInteraction, { passive: true });
-    window.addEventListener('keydown', (e) => {
-      if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Space'].includes(e.code)) {
-        onUserInteraction();
-      }
-    }, { passive: true });
-
-    return () => {
-      window.clearTimeout(startTimer);
-      if (resumeTimerRef.current) window.clearTimeout(resumeTimerRef.current);
-      window.removeEventListener('wheel', onUserInteraction);
-      window.removeEventListener('touchstart', onUserInteraction);
-      window.removeEventListener('pointerdown', onUserInteraction);
-    };
-  }, [isLoaded]);
-
-  // Butter-smooth frame-rate independent physics engine with auto-scroll
+  // Drive scroll progress smoothly
   useEffect(() => {
     let animId: number;
     let target = 0;
     let current = 0;
-    let lastTime = performance.now();
 
-    const maxScroll = () => Math.max(1, document.documentElement.scrollHeight - stableVhRef.current);
+    const maxScroll = () => Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
 
     const onScroll = () => {
-      if (userInteractingRef.current) {
-        scrollPosRef.current = window.scrollY;
-      }
       target = Math.min(1, Math.max(0, window.scrollY / maxScroll()));
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    const loop = (now: number) => {
-      const dt = Math.min(0.05, (now - lastTime) / 1000);
-      lastTime = now;
-
-      const maxS = maxScroll();
-
-      // Fluid, continuous subpixel auto-scroll (~30s cinematic full walkthrough)
-      if (isAutoScrollingRef.current && isLoaded && !userInteractingRef.current) {
-        if (scrollPosRef.current < maxS * 0.985) {
-          const scrollSpeed = maxS / 30;
-          scrollPosRef.current += scrollSpeed * dt;
-          if (scrollPosRef.current >= maxS * 0.985) {
-            scrollPosRef.current = maxS * 0.985;
-            isAutoScrollingRef.current = false;
-          }
-          window.scrollTo(0, scrollPosRef.current);
-          target = scrollPosRef.current / maxS;
-        } else {
-          isAutoScrollingRef.current = false;
-        }
-      }
-
-      // Responsive tracking with silky-smooth damping
-      const k = reducedMotion ? 1 : 1 - Math.exp(-dt * 15.0);
+    const loop = () => {
+      const k = reducedMotion ? 1 : 0.085;
       current += (target - current) * k;
-      if (Math.abs(target - current) < 1e-5) current = target;
+      if (Math.abs(target - current) < 1e-4) current = target;
 
-      // Temple scene progress runs across current: 0.00 to 0.50
-      const tProg = Math.min(1, current / 0.50);
+      setScrollProgress(current);
 
-      // Evening Mandap progress runs across current: 0.45 to 1.00
-      const eProg = Math.max(0, Math.min(1, (current - 0.45) / 0.55));
-
-      templeProgressRef.current = tProg;
-      eveningProgressRef.current = eProg;
-
-      // Pause hidden scene's animation loops and effects by updating active flags at boundary
-      const isTemple = current < 0.55;
-      const isEvening = current > 0.45;
-      if (isTemple !== templeActiveRef.current) {
-        templeActiveRef.current = isTemple;
-        setTempleActive(isTemple);
-      }
-      if (isEvening !== eveningActiveRef.current) {
-        eveningActiveRef.current = isEvening;
-        setEveningActive(isEvening);
-      }
-
-      // Continuous, smooth crossfade between 0.45 and 0.55 without sudden cuts
-      let tOp = 1;
-      let eOp = 0;
-
-      if (current <= 0.45) {
-        tOp = 1;
-        eOp = 0;
-      } else if (current >= 0.55) {
-        tOp = 0;
-        eOp = 1;
-      } else {
-        const t = (current - 0.45) / 0.10;
-        const s = t * t * (3 - 2 * t);
-        tOp = 1 - s;
-        eOp = s;
-      }
-
-      if (templeWrapperRef.current) {
-        templeWrapperRef.current.style.opacity = tOp.toFixed(3);
-        templeWrapperRef.current.style.visibility = tOp > 0.005 ? 'visible' : 'hidden';
-      }
-      if (eveningWrapperRef.current) {
-        eveningWrapperRef.current.style.opacity = eOp.toFixed(3);
-        eveningWrapperRef.current.style.visibility = eOp > 0.005 ? 'visible' : 'hidden';
-      }
+      // Identify active chapter
+      let closestIdx = 0;
+      let minDiff = 999;
+      CHAPTERS.forEach((ch, idx) => {
+        const diff = Math.abs(ch.at - current);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIdx = idx;
+        }
+      });
+      setActiveChapter(closestIdx);
 
       animId = requestAnimationFrame(loop);
     };
@@ -205,45 +73,69 @@ export const App: React.FC = () => {
       window.removeEventListener('scroll', onScroll);
       cancelAnimationFrame(animId);
     };
-  }, [reducedMotion, isLoaded]);
+  }, [reducedMotion]);
+
+  const scrollToChapter = (at: number) => {
+    const maxS = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    window.scrollTo({
+      top: at * maxS,
+      behavior: reducedMotion ? 'auto' : 'smooth'
+    });
+  };
+
+  // Map global scrollProgress (0..1) into two seamless, crossfading stages:
+  // Phase 1 (0..0.72): Temple Entrance & Walkthrough
+  // Transition (0.68..0.78): Soft Opacity & Scale Reveal
+  // Phase 2 (0.70..1.0): Evening garden -> illuminated night mandap -> invitation
+  const templeProgress = Math.min(1, scrollProgress / 0.72);
+  const templeOpacity = scrollProgress < 0.68 ? 1 : Math.max(0, 1 - (scrollProgress - 0.68) / 0.08);
+
+  const eveningProgress = Math.max(0, (scrollProgress - 0.70) / 0.30);
+  const eveningOpacity = scrollProgress < 0.70 ? 0 : Math.min(1, (scrollProgress - 0.70) / 0.07);
+
 
   return (
     <>
-      {/* Auspicious Initial Preloader: Preloads & GPU-decodes ALL 19 assets before reveal */}
-      {!isLoaded && <LoadingScreen onLoaded={() => setIsLoaded(true)} />}
-
       {/* Scroll track height drives the camera */}
       <div id="scroll-track" aria-hidden="true" />
 
       <main className="app-container">
-        {/* Preceding Golden-Hour Temple Scene (decoupled from React re-renders) */}
-        <div
-          ref={templeWrapperRef}
-          className={`scene-stage-wrapper ${templeActive ? '' : 'scene-hidden'}`}
-        >
-          <TempleScene
-            progressRef={templeProgressRef}
-            reducedMotion={reducedMotion}
-            active={templeActive}
-          />
-        </div>
+        {/* Preceding Temple Scene */}
+        <TempleScene
+          progress={templeProgress}
+          opacity={templeOpacity}
+          reducedMotion={reducedMotion}
+        />
 
-        {/* Evening-to-Night Wedding Garden & Illuminated Mandap Scene */}
-        <div
-          ref={eveningWrapperRef}
-          className={`scene-stage-wrapper ${eveningActive ? '' : 'scene-hidden'}`}
-          style={{ opacity: 0, visibility: 'hidden' }}
+        {/* Twilight garden -> night mandap -> invitation */}
+        <EveningScene
+          progress={eveningProgress}
+          opacity={eveningOpacity}
+          reducedMotion={reducedMotion}
+        />
+
+        {/* Floating Chapter Navigation */}
+        <nav
+          className="app-chapters"
+          aria-label="Wedding Invitation Scene Chapters"
         >
-          <DaytimeScene
-            progressRef={eveningProgressRef}
-            reducedMotion={reducedMotion}
-            active={eveningActive}
-            opacity={eveningActive ? 1 : 0}
-          />
-        </div>
+          {CHAPTERS.map((ch, idx) => (
+            <button
+              key={ch.label}
+              type="button"
+              className={activeChapter === idx ? 'active' : ''}
+              onClick={() => scrollToChapter(ch.at)}
+              aria-label={ch.label}
+            >
+              <span>{ch.label}</span>
+              <i />
+            </button>
+          ))}
+        </nav>
       </main>
     </>
   );
 };
 
 export default App;
+

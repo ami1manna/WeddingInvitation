@@ -32,24 +32,15 @@ export const InvitationCopy: React.FC = React.memo(() => (
       <p className="inv-eyebrow reveal-line" style={line(0)}>{W.eyebrow}</p>
       <Ornament i={1} />
 
-      <div className="inv-couple-sequence">
-        <div className="inv-person-block reveal-line reveal-blur" style={line(2)}>
-          <h2 className="inv-name">{W.groom}</h2>
-          <span className="inv-relation">S/o</span>
-          <p className="inv-parent">Nobin Samanta</p>
-          <p className="inv-parent">Dipali Samanta</p>
-        </div>
+      <h1 className="inv-names">
+        <span className="inv-name reveal-line reveal-blur" style={line(2)}>{W.bride}</span>
+        <span className="inv-amp reveal-line" style={line(3)}>&amp;</span>
+        <span className="inv-name reveal-line reveal-blur" style={line(4)}>{W.groom}</span>
+      </h1>
 
-        <div className="inv-amp-wrap reveal-line" style={line(3)} aria-hidden="true">
-          <span className="inv-amp">&amp;</span>
-        </div>
-
-        <div className="inv-person-block reveal-line reveal-blur" style={line(4)}>
-          <h2 className="inv-name">{W.bride}</h2>
-          <span className="inv-relation">D/o</span>
-          <p className="inv-parent">Samir Manna</p>
-          <p className="inv-parent">Dipali Manna</p>
-        </div>
+      <div className="inv-parents">
+        <p className="reveal-line" style={line(5)}>{W.brideParents}</p>
+        <p className="reveal-line" style={line(6)}>{W.groomParents}</p>
       </div>
 
       <Ornament i={7} />

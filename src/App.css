@@ -1,13 +1,9 @@
 :root {
-  --midnight: #060814;
-  --navy: #0c142c;
-  --violet: #1d0f2f;
-  --maroon: #2f0910;
-  --amber: #f59e0b;
-  --gold: #e0a93c;
-  --antique-gold: #d4af37;
-  --champagne: #f7e7ce;
-  --cream: #fff8ed;
+  --navy: #070b1f;
+  --maroon: #3a1018;
+  --gold: #c9a25a;
+  --champagne: #f3dca0;
+  --cream: #fbf3e2;
   --display: "Marcellus", "Cormorant Garamond", Georgia, "Times New Roman", serif;
 }
 
@@ -18,37 +14,16 @@
 }
 
 html, body {
-  background: #030409;
+  background: #0a0a1c;
   min-height: 100vh;
-  min-height: var(--stable-vh, 100vh);
-  height: 100%;
-  width: 100%;
   font-family: var(--display);
   color: var(--cream);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  /* Hide scrollbar across all browsers while retaining touch & wheel scroll */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-/* Luxury PC desktop backdrop outside mobile container */
-@media (min-width: 440px) {
-  body {
-    background: radial-gradient(ellipse at 50% 45%, #0e1326 0%, #060914 55%, #020307 100%);
-  }
-}
-
-html::-webkit-scrollbar,
-body::-webkit-scrollbar,
-*::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
 }
 
 #scroll-track {
-  height: 750vh;
+  height: 1500vh;
   width: 1px;
   position: absolute;
   top: 0;
@@ -56,42 +31,74 @@ body::-webkit-scrollbar,
   pointer-events: none;
 }
 
-/* Constrained to mobile width (max 430px) and centered on all displays including PC */
 .app-container {
   position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 430px;
-  height: 100vh;
-  height: var(--stable-vh, 100vh);
-  overflow: hidden;
-  background-color: var(--midnight);
-  box-shadow: 0 0 70px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(212, 175, 55, 0.15);
-}
-
-.scene-stage-wrapper {
-  position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* Pause all CSS animations on hidden scenes so GPU does zero work */
-.scene-stage-wrapper[style*="visibility: hidden"] *,
-.scene-hidden * {
-  animation-play-state: paused !important;
+/* Chapter Navigation */
+.app-chapters {
+  position: absolute;
+  right: max(18px, 2.2vw);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 50;
 }
 
-/* Hide Netlify Badge and Card */
-#nl-badge,
-.nl-badge,
-#nl-card,
-.nl-card {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
+.app-chapters button {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  height: 32px;
+  padding: 0 6px;
+  font-size: 13px;
+  color: #fbf3e2;
+  letter-spacing: 0.05em;
+  transition: color 0.3s ease;
 }
+
+.app-chapters button span {
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 0.25s, transform 0.25s;
+  text-shadow: 0 1px 10px rgba(30, 8, 2, 0.95);
+  white-space: nowrap;
+}
+
+.app-chapters button i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid #f3dca0;
+  background: transparent;
+  transition: background 0.25s, transform 0.25s, border-color 0.25s;
+  box-shadow: 0 0 8px rgba(30, 8, 2, 0.5);
+}
+
+.app-chapters button:hover span,
+.app-chapters button:focus-visible span {
+  opacity: 1;
+  transform: none;
+}
+
+.app-chapters button.active i {
+  background: var(--gold);
+  border-color: var(--gold);
+  transform: scale(1.4);
+}
+
+@media (max-width: 640px) {
+  .app-chapters button span {
+    display: none;
+  }
+}
+

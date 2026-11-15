@@ -1,5 +1,4 @@
 :root{
-  --midnight:#060814;
   --maroon:#3a120c;
   --ink:#5b1a12;
   --gold:#e0a93c;
@@ -7,11 +6,11 @@
   --display:"Marcellus","Cormorant Garamond",Georgia,"Times New Roman",serif;
 }
 *{box-sizing:border-box;margin:0}
-html{background:#060814}
+html{background:#2a0f0a}
 body{min-height:100vh;font-family:var(--display);color:var(--cream);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 #track{height:1000vh;width:1px;position:absolute;top:0;left:0;pointer-events:none}
 
-#stage{position:fixed;inset:0;overflow:hidden;background:#060814;touch-action:pan-y}
+#stage{position:fixed;inset:0;overflow:hidden;background:#2a0f0a;touch-action:pan-y}
 #viewport{position:absolute;inset:0;overflow:hidden;perspective:1600px;perspective-origin:50% 50%}
 
 /* 1920x1080 design canvas, scaled to cover the screen (set from JS as --s) */

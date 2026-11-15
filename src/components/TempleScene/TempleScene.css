@@ -1,34 +1,11 @@
-/* Temple Entrance Scene Styles - Evening Golden-Hour Aesthetic */
+/* Temple Entrance Scene Styles */
 .temple-stage {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #090306;
+  background: #1c0a14;
   touch-action: pan-y;
-}
-
-/* Sunset Sky behind Temple Facade */
-#temple-sunset-sky {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.sunset-sky-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    #080410 0%,
-    #180a22 30%,
-    #2c0f2e 52%,
-    #4a152e 70%,
-    #7a2624 84%,
-    #b3481b 94%,
-    #d46e1a 100%
-  );
-  opacity: 0.95;
+  will-change: transform, opacity;
 }
 
 .temple-viewport {
@@ -51,12 +28,14 @@
   perspective: 1700px;
   perspective-origin: 960px 540px;
   transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .temple-layer {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .temple-layer img {
@@ -66,108 +45,14 @@
   pointer-events: none;
 }
 
-/* Proper 3D z-index hierarchy */
-#deep {
-  z-index: 1;
+#deep, #interior {
   transform-origin: 960px 593px;
-}
-
-#interior {
-  z-index: 2;
-  transform-origin: 960px 593px;
-}
-
-#facade {
-  z-index: 3;
-  transform-origin: 960px 540px;
-  transform-style: preserve-3d;
-  perspective: 1300px;
-}
-
-#particles-canvas {
-  z-index: 4;
-}
-
-#foreground {
-  z-index: 5;
-}
-
-#bloom {
-  z-index: 6;
-}
-
-#vignette, #scrim {
-  z-index: 7;
-}
-
-.temple-caption {
-  z-index: 8;
+  will-change: transform;
 }
 
 #interior img {
   width: 1920px;
   height: 1080px;
-  filter: brightness(0.92) contrast(1.1) drop-shadow(0 0 20px rgba(0, 0, 0, 0.6));
-}
-
-/* Shiva & Parvati Divine Aura */
-.sanctum-divine-aura {
-  position: absolute;
-  left: 960px;
-  top: 660px;
-  width: 420px;
-  height: 420px;
-  margin: -210px 0 0 -210px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 235, 170, 0.45) 0%,
-    rgba(255, 180, 60, 0.22) 42%,
-    transparent 75%
-  );
-  filter: blur(10px);
-  pointer-events: none;
-}
-
-/* Sanctum Altar Diyas flanking Shiva & Parvati */
-.sanctum-diya {
-  position: absolute;
-  top: 760px;
-  width: 24px;
-  height: 24px;
-  pointer-events: none;
-}
-
-.sanctum-diya-left {
-  left: 760px;
-}
-
-.sanctum-diya-right {
-  left: 1135px;
-}
-
-.sanctum-diya .diya-flame {
-  position: absolute;
-  left: 7px;
-  top: -8px;
-  width: 10px;
-  height: 16px;
-  border-radius: 50% 50% 35% 35%;
-  background: radial-gradient(circle at 50% 70%, #ffffff 0%, #fff0a0 30%, #ff8a00 70%, transparent 100%);
-  filter: drop-shadow(0 0 8px #ffb300);
-  animation: flameFlicker 1.8s ease-in-out infinite alternate;
-}
-
-.sanctum-diya .diya-glow {
-  position: absolute;
-  left: -28px;
-  top: -30px;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 185, 60, 0.65) 0%, rgba(255, 120, 20, 0.25) 50%, transparent 75%);
-  filter: blur(6px);
-  animation: glowFlicker 2.1s ease-in-out infinite alternate;
 }
 
 #godrays {
@@ -209,173 +94,20 @@
   mask-image: radial-gradient(circle at 50% 50%, black 0%, black 35%, transparent 70%);
   -webkit-mask-image: radial-gradient(circle at 50% 50%, black 0%, black 35%, transparent 70%);
   transform-origin: 50% 50%;
+  will-change: transform, opacity;
 }
 
 #glow {
   position: absolute;
   left: 960px;
   top: 593px;
-  width: 900px;
-  height: 900px;
-  margin: -450px 0 0 -450px;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 240, 190, 0.45) 0%, rgba(255, 185, 80, 0.2) 35%, transparent 68%);
-  opacity: 0;
+  width: 1500px;
+  height: 1500px;
+  margin: -750px 0 0 -750px;
+  background: radial-gradient(circle at 50% 50%, #ffd9a0 0%, #f6a64e 22%, rgba(214, 112, 52, 0.55) 42%, rgba(150, 50, 40, 0) 68%);
+  opacity: 0.9;
   transform-origin: 50% 50%;
-  pointer-events: none;
-}
-
-/* Sanctum Divine Aura behind Shiva & Parvati */
-.sanctum-divine-aura {
-  position: absolute;
-  left: 960px;
-  top: 670px;
-  width: 480px;
-  height: 480px;
-  margin: -240px 0 0 -240px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 235, 160, 0.45) 0%,
-    rgba(255, 180, 60, 0.25) 45%,
-    rgba(220, 100, 20, 0.08) 70%,
-    transparent 100%
-  );
-  filter: blur(12px);
-  animation: divineAuraPulse 4.5s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-
-@keyframes divineAuraPulse {
-  0%   { transform: scale(0.92); opacity: 0.65; }
-  100% { transform: scale(1.08); opacity: 0.95; }
-}
-
-/* Pushpavrishti: Divine Flower Shower */
-.divine-pushpavrishti {
-  position: absolute;
-  left: 740px;
-  top: 420px;
-  width: 440px;
-  height: 380px;
-  pointer-events: none;
-  overflow: visible;
-}
-
-.divine-petal {
-  position: absolute;
-  width: 14px;
-  height: 9px;
-  border-radius: 50% 40% 50% 30%;
-  opacity: 0;
-  animation: divinePetalDrift 6.5s ease-in-out infinite;
-}
-
-.dp-1 { left: 12%; top: -10px; background: #ff4d6d; animation-delay: 0s; }
-.dp-2 { left: 28%; top: -15px; background: #ffb703; animation-delay: 1.2s; animation-duration: 5.8s; }
-.dp-3 { left: 45%; top: -8px;  background: #ff758f; animation-delay: 2.4s; animation-duration: 7.2s; }
-.dp-4 { left: 62%; top: -12px; background: #fb8500; animation-delay: 0.8s; animation-duration: 6.0s; }
-.dp-5 { left: 78%; top: -18px; background: #ff4d6d; animation-delay: 3.2s; animation-duration: 6.8s; }
-.dp-6 { left: 35%; top: -14px; background: #fff07c; animation-delay: 4.1s; animation-duration: 5.4s; }
-.dp-7 { left: 55%; top: -10px; background: #ff85a1; animation-delay: 1.8s; animation-duration: 6.6s; }
-.dp-8 { left: 85%; top: -16px; background: #f77f00; animation-delay: 4.8s; animation-duration: 7.0s; }
-
-@keyframes divinePetalDrift {
-  0% {
-    transform: translate(0, 0) rotate(0deg) scale(0.7);
-    opacity: 0;
-  }
-  15% {
-    opacity: 0.85;
-  }
-  50% {
-    transform: translate(24px, 140px) rotate(180deg) scale(1);
-    opacity: 0.9;
-  }
-  85% {
-    opacity: 0.7;
-  }
-  100% {
-    transform: translate(-18px, 280px) rotate(360deg) scale(0.65);
-    opacity: 0;
-  }
-}
-
-/* Sacred Dhoop Incense Burners in Sanctum */
-.sanctum-dhoop {
-  position: absolute;
-  top: 760px;
-  width: 44px;
-  height: 52px;
-  pointer-events: none;
-  z-index: 5;
-}
-
-.dhoop-left  { left: 720px; }
-.dhoop-right { left: 1156px; }
-
-.dhoop-bowl {
-  position: absolute;
-  bottom: 0;
-  left: 2px;
-  width: 40px;
-  height: 18px;
-  border-radius: 4px 4px 14px 14px;
-  background: linear-gradient(135deg, #d4982c 0%, #874e0d 60%, #442203 100%);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7), inset 0 2px 4px rgba(255, 220, 120, 0.6);
-}
-
-.dhoop-ember {
-  position: absolute;
-  bottom: 14px;
-  left: 14px;
-  width: 16px;
-  height: 8px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff 0%, #ff8c00 55%, #b71c1c 100%);
-  box-shadow: 0 0 10px #ff6d00, 0 0 20px rgba(255, 109, 0, 0.5);
-  animation: emberBreathe 2.8s ease-in-out infinite alternate;
-}
-
-@keyframes emberBreathe {
-  0%   { opacity: 0.7; transform: scale(0.9); }
-  100% { opacity: 1.0; transform: scale(1.15); }
-}
-
-.dhoop-smoke {
-  position: absolute;
-  bottom: 20px;
-  left: 17px;
-  width: 12px;
-  height: 38px;
-  border-radius: 50% 50% 40% 40%;
-  background: radial-gradient(ellipse at 50% 50%, rgba(255, 240, 220, 0.5) 0%, rgba(255, 210, 160, 0.2) 50%, transparent 80%);
-  filter: blur(5px);
-  opacity: 0;
-  animation: dhoopSmokeCurl 4.2s ease-out infinite;
-}
-
-.smoke-b {
-  animation-delay: 2.1s;
-  animation-duration: 4.8s;
-  left: 13px;
-}
-
-@keyframes dhoopSmokeCurl {
-  0% {
-    transform: translate(0, 0) scaleX(0.7) scaleY(0.5);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.65;
-  }
-  60% {
-    transform: translate(14px, -45px) scaleX(1.4) scaleY(1.3);
-    opacity: 0.45;
-  }
-  100% {
-    transform: translate(-10px, -95px) scaleX(2.2) scaleY(2.0);
-    opacity: 0;
-  }
+  will-change: transform, opacity;
 }
 
 #couple {
@@ -385,6 +117,7 @@
   width: 1920px;
   height: 1080px;
   transform-origin: 960px 780px;
+  will-change: transform, opacity;
 }
 
 #couple img {
@@ -392,13 +125,13 @@
   width: 340px;
   left: 790px;
   top: 523px;
-  filter: drop-shadow(0 0 25px rgba(255, 200, 100, 0.4));
 }
 
 #facade {
   transform-origin: 960px 540px;
   transform-style: preserve-3d;
   perspective: 1300px;
+  will-change: transform;
 }
 
 #wall {
@@ -407,225 +140,6 @@
   top: 0;
   width: 1920px;
   height: 1080px;
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.7));
-}
-
-/* Glowing Brass Diyas flanking the Entrance Doors */
-.entrance-diya {
-  position: absolute;
-  top: 836px;
-  width: 72px;
-  height: 48px;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.entrance-diya-left {
-  left: 642px;
-}
-
-.entrance-diya-right {
-  left: 1206px;
-}
-
-.entrance-diya .diya-base-svg {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 64px;
-  height: 36px;
-  filter: drop-shadow(0 4px 10px rgba(18, 5, 2, 0.85));
-}
-
-.entrance-diya .diya-flame {
-  position: absolute;
-  left: 27px;
-  top: -4px;
-  width: 10px;
-  height: 18px;
-  border-radius: 50% 50% 35% 35%;
-  background: radial-gradient(circle at 50% 70%, #ffffff 0%, #fff2b2 32%, #ff9500 70%, #d84315 100%);
-  filter: drop-shadow(0 0 10px #ffb300);
-  animation: flameFlicker 1.9s ease-in-out infinite alternate;
-  z-index: 2;
-}
-
-.entrance-diya .diya-glow {
-  position: absolute;
-  left: -28px;
-  top: -42px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 185, 60, 0.72) 0%, rgba(255, 110, 20, 0.3) 48%, transparent 75%);
-  filter: blur(10px);
-  animation: glowFlicker 2.4s ease-in-out infinite alternate;
-  z-index: 1;
-}
-
-.entrance-diya .diya-smoke {
-  position: absolute;
-  left: 28px;
-  top: -24px;
-  width: 8px;
-  height: 24px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 50%, rgba(255, 230, 200, 0.45) 0%, rgba(255, 180, 100, 0.15) 50%, transparent 80%);
-  filter: blur(4px);
-  opacity: 0;
-  animation: diyaSmokeAscend 3.2s ease-out infinite;
-  pointer-events: none;
-}
-
-@keyframes diyaSmokeAscend {
-  0% {
-    transform: translateY(0) scale(0.6);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.6;
-  }
-  60% {
-    transform: translateY(-28px) translateX(6px) scale(1.3);
-    opacity: 0.35;
-  }
-  100% {
-    transform: translateY(-56px) translateX(-4px) scale(2.0);
-    opacity: 0;
-  }
-}
-
-/* Fluttering Sacred Saffron Flags (Dhwaja) atop Entrance Pillars */
-.temple-dhwaja {
-  position: absolute;
-  top: 76px;
-  width: 90px;
-  height: 110px;
-  pointer-events: none;
-  z-index: 8;
-}
-
-.dhwaja-left  { left: 520px; }
-.dhwaja-right { left: 1310px; }
-
-.dhwaja-pole {
-  position: absolute;
-  left: 0;
-  top: 8px;
-  width: 4px;
-  height: 100px;
-  background: linear-gradient(to right, #ffd875, #b8860b, #614008);
-  border-radius: 2px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
-}
-
-.dhwaja-finial {
-  position: absolute;
-  left: -4px;
-  top: 0;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #fff6cf, #d49a2a, #6c460a);
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-}
-
-.dhwaja-cloth {
-  position: absolute;
-  left: 4px;
-  top: 10px;
-  width: 76px;
-  height: 52px;
-  transform-origin: 0 0;
-  clip-path: polygon(0 0, 100% 0, 72% 50%, 100% 100%, 0 100%);
-  -webkit-clip-path: polygon(0 0, 100% 0, 72% 50%, 100% 100%, 0 100%);
-  background: linear-gradient(135deg, #ff7b00 0%, #ff5400 45%, #e63900 100%);
-  box-shadow: 0 4px 12px rgba(180, 50, 0, 0.4);
-}
-
-.dhwaja-cloth-left {
-  animation: dhwajaWave 3.5s ease-in-out infinite alternate;
-}
-
-.dhwaja-cloth-right {
-  animation: dhwajaWave 3.8s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes dhwajaWave {
-  0% {
-    transform: skewY(0deg) scaleX(1);
-    filter: brightness(1);
-  }
-  30% {
-    transform: skewY(4deg) scaleX(0.94);
-    filter: brightness(1.1);
-  }
-  70% {
-    transform: skewY(-3deg) scaleX(1.04);
-    filter: brightness(0.92);
-  }
-  100% {
-    transform: skewY(2deg) scaleX(0.97);
-    filter: brightness(1.05);
-  }
-}
-
-/* Entrance Wind-blown Marigold Petals */
-.entrance-wind-petals {
-  position: absolute;
-  left: 600px;
-  top: 760px;
-  width: 720px;
-  height: 220px;
-  pointer-events: none;
-  z-index: 9;
-}
-
-.ew-petal {
-  position: absolute;
-  width: 13px;
-  height: 8px;
-  border-radius: 50% 30% 50% 40%;
-  background: linear-gradient(120deg, #ffbe0b, #fb5607);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-  opacity: 0;
-  animation: entrancePetalFly 7s ease-in-out infinite;
-}
-
-.ep-1 { left: 10%; top: 40px; animation-delay: 0.2s; animation-duration: 6.8s; }
-.ep-2 { left: 30%; top: 80px; animation-delay: 1.5s; animation-duration: 7.4s; }
-.ep-3 { left: 55%; top: 20px; animation-delay: 3.2s; animation-duration: 6.2s; }
-.ep-4 { left: 75%; top: 90px; animation-delay: 4.8s; animation-duration: 7.8s; }
-.ep-5 { left: 45%; top: 60px; animation-delay: 2.3s; animation-duration: 6.5s; }
-
-@keyframes entrancePetalFly {
-  0% {
-    transform: translate(0, 0) rotate(0deg) scale(0.6);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.85;
-  }
-  60% {
-    transform: translate(120px, 45px) rotate(220deg) scale(1);
-    opacity: 0.75;
-  }
-  100% {
-    transform: translate(260px, 90px) rotate(420deg) scale(0.5);
-    opacity: 0;
-  }
-}
-
-@keyframes flameFlicker {
-  0%   { transform: scale(0.92) rotate(-2deg); opacity: 0.85; }
-  50%  { transform: scale(1.06) rotate(2deg); opacity: 1; }
-  100% { transform: scale(0.97) rotate(-1deg); opacity: 0.92; }
-}
-
-@keyframes glowFlicker {
-  0%   { transform: scale(0.94); opacity: 0.72; }
-  50%  { transform: scale(1.08); opacity: 0.98; }
-  100% { transform: scale(0.98); opacity: 0.8; }
 }
 
 #door-spill {
@@ -651,6 +165,7 @@
   height: 660px;
   transform-style: preserve-3d;
   backface-visibility: hidden;
+  will-change: transform;
 }
 
 .door img {
@@ -676,6 +191,7 @@
   height: 1080px;
   pointer-events: none;
   mix-blend-mode: screen;
+  will-change: transform;
 }
 
 #foreground {
@@ -683,6 +199,7 @@
   inset: 0;
   transform-origin: 960px 0;
   pointer-events: none;
+  will-change: transform, opacity;
   z-index: 4;
 }
 
@@ -695,20 +212,21 @@
 }
 
 #bell-l, #bell-r {
-  transform-origin: center top;
+  will-change: transform;
 }
 
 #bloom {
-  display: none !important;
-  opacity: 0 !important;
+  background: radial-gradient(ellipse 60% 70% at 50% 50%, #ffd896 0%, #f3a04c 45%, #c4602a 100%);
+  opacity: 0;
   pointer-events: none;
+  will-change: opacity;
 }
 
 #vignette {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse at 50% 50%, rgba(20, 6, 2, 0) 55%, rgba(20, 6, 2, 0.38) 100%);
+  background: radial-gradient(ellipse at 50% 50%, rgba(20, 6, 20, 0) 48%, rgba(24, 8, 28, 0.55) 100%);
 }
 
 #scrim {
@@ -763,3 +281,21 @@
   padding: 0 8vw;
 }
 
+
+/* Golden-hour wash: dusky violet sky-light from above, amber from the lamps below */
+#dusk-wash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(96, 58, 150, 0.42), rgba(255, 140, 60, 0.05) 46%, rgba(255, 150, 60, 0.28));
+  mix-blend-mode: soft-light;
+}
+
+/* Temple diyas (foreground) */
+.t-diya-halo { mix-blend-mode: screen; animation: tFlicker 2.8s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
+.t-flame { transform-box: fill-box; transform-origin: 50% 92%; animation: tFlame 1.4s ease-in-out infinite alternate; }
+@keyframes tFlicker { from { opacity: 0.75; transform: scale(0.95); } to { opacity: 1; transform: scale(1.06); } }
+@keyframes tFlame {
+  0% { transform: scale(1, 0.93) skewX(-2deg); } 50% { transform: scale(0.93, 1.07) skewX(2deg); } 100% { transform: scale(1.05, 0.97) skewX(-1deg); }
+}
+@media (prefers-reduced-motion: reduce) { .t-diya-halo, .t-flame { animation: none; } }
