@@ -11,13 +11,15 @@ interface TempleSceneProps {
   progressRef?: React.MutableRefObject<number>;
   opacity?: number;
   reducedMotion?: boolean;
+  active?: boolean;
 }
 
 export const TempleScene: React.FC<TempleSceneProps> = React.memo(({
   progress = 0,
   progressRef: externalProgressRef,
   opacity = 1,
-  reducedMotion = false
+  reducedMotion = false,
+  active = true
 }) => {
   const worldRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -104,6 +106,7 @@ export const TempleScene: React.FC<TempleSceneProps> = React.memo(({
 
   // Particle System setup
   useEffect(() => {
+    if (!active) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -305,7 +308,7 @@ export const TempleScene: React.FC<TempleSceneProps> = React.memo(({
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [reducedMotion]);
+  }, [reducedMotion, active]);
 
   return (
     <div

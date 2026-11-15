@@ -6,10 +6,11 @@ import { DAYTIME_ASSETS } from './assets';
  * Creates dynamic, non-repeating turbulent flame physics with additive light blending,
  * incandescent white-hot core, ascending turbulent fluid particles, and floating ember sparks.
  */
-const RealisticFireCanvas: React.FC = () => {
+const RealisticFireCanvas: React.FC<{ active?: boolean }> = ({ active = true }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (!active) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -185,12 +186,16 @@ const RealisticFireCanvas: React.FC = () => {
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, []);
+  }, [active]);
 
   return <canvas ref={canvasRef} className="realistic-flame-canvas" width={140} height={160} />;
 };
 
-export const MandapLayer: React.FC = React.memo(() => (
+interface MandapLayerProps {
+  active?: boolean;
+}
+
+export const MandapLayer: React.FC<MandapLayerProps> = React.memo(({ active = true }) => (
   <div className="daytime-layer daytime-mandap-layer evening-mandap" role="region" aria-label="Grand illuminated evening wedding mandap">
     <div className="mandap-container" data-fx="mandap">
       {/* Soft warm glow breathing inside the open mandap canopy */}
@@ -247,7 +252,7 @@ export const MandapLayer: React.FC = React.memo(() => (
 
         {/* 60fps Physical Fluid Agni Fire Simulation */}
         <div className="kund-fire-stage">
-          <RealisticFireCanvas />
+          <RealisticFireCanvas active={active} />
         </div>
 
         {/* Photorealistic Stepped Copper & Brass Havan Altar with Glowing Logs */}

@@ -7,6 +7,13 @@ import './App.css';
 export const App: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [templeActive, setTempleActive] = useState(true);
+  const [eveningActive, setEveningActive] = useState(false);
+
+  const templeActiveRef = useRef(true);
+  const eveningActiveRef = useRef(false);
+
+  const stableVhRef = useRef(typeof window !== 'undefined' ? window.innerHeight : 800);
 
   const templeProgressRef = useRef(0);
   const eveningProgressRef = useRef(0);
@@ -18,6 +25,27 @@ export const App: React.FC = () => {
   const userInteractingRef = useRef(false);
   const resumeTimerRef = useRef<number | null>(null);
   const scrollPosRef = useRef(0);
+
+  // Lock stage and scroll maths to a stable viewport height (prevent mobile URL bar jump)
+  useEffect(() => {
+    const updateStableVh = () => {
+      const vh = window.innerHeight;
+      stableVhRef.current = vh;
+      document.documentElement.style.setProperty('--stable-vh', `${vh}px`);
+    };
+    updateStableVh();
+    window.addEventListener('orientationchange', updateStableVh);
+    const onResize = () => {
+      if (Math.abs(window.innerHeight - stableVhRef.current) > 150 || window.innerWidth > 600) {
+        updateStableVh();
+      }
+    };
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('orientationchange', updateStableVh);
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
 
   // Detect accessibility preference for reduced motion
   useEffect(() => {
@@ -51,7 +79,7 @@ export const App: React.FC = () => {
       resumeTimerRef.current = window.setTimeout(() => {
         userInteractingRef.current = false;
         scrollPosRef.current = window.scrollY;
-        const maxS = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        const maxS = Math.max(1, document.documentElement.scrollHeight - stableVhRef.current);
         if (window.scrollY < maxS * 0.98) {
           isAutoScrollingRef.current = true;
         }
@@ -83,7 +111,7 @@ export const App: React.FC = () => {
     let current = 0;
     let lastTime = performance.now();
 
-    const maxScroll = () => Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const maxScroll = () => Math.max(1, document.documentElement.scrollHeight - stableVhRef.current);
 
     const onScroll = () => {
       if (userInteractingRef.current) {
@@ -129,6 +157,18 @@ export const App: React.FC = () => {
 
       templeProgressRef.current = tProg;
       eveningProgressRef.current = eProg;
+
+      // Pause hidden scene's animation loops and effects by updating active flags at boundary
+      const isTemple = current < 0.55;
+      const isEvening = current > 0.45;
+      if (isTemple !== templeActiveRef.current) {
+        templeActiveRef.current = isTemple;
+        setTempleActive(isTemple);
+      }
+      if (isEvening !== eveningActiveRef.current) {
+        eveningActiveRef.current = isEvening;
+        setEveningActive(isEvening);
+      }
 
       // Continuous, smooth crossfade between 0.45 and 0.55 without sudden cuts
       let tOp = 1;
@@ -177,22 +217,28 @@ export const App: React.FC = () => {
 
       <main className="app-container">
         {/* Preceding Golden-Hour Temple Scene (decoupled from React re-renders) */}
-        <div ref={templeWrapperRef} className="scene-stage-wrapper">
+        <div
+          ref={templeWrapperRef}
+          className={`scene-stage-wrapper ${templeActive ? '' : 'scene-hidden'}`}
+        >
           <TempleScene
             progressRef={templeProgressRef}
             reducedMotion={reducedMotion}
+            active={templeActive}
           />
         </div>
 
         {/* Evening-to-Night Wedding Garden & Illuminated Mandap Scene */}
         <div
           ref={eveningWrapperRef}
-          className="scene-stage-wrapper"
+          className={`scene-stage-wrapper ${eveningActive ? '' : 'scene-hidden'}`}
           style={{ opacity: 0, visibility: 'hidden' }}
         >
           <DaytimeScene
             progressRef={eveningProgressRef}
             reducedMotion={reducedMotion}
+            active={eveningActive}
+            opacity={eveningActive ? 1 : 0}
           />
         </div>
       </main>

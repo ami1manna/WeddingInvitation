@@ -9,13 +9,18 @@
   width: 100vw;
   width: 100%;
   height: 100vh;
-  height: 100dvh;
+  height: var(--stable-vh, 100vh);
   overflow: hidden;
   pointer-events: none;
   touch-action: pan-y;
   background-color: #070914;
   font-family: var(--display, 'Marcellus', 'Cormorant Garamond', Georgia, serif);
   z-index: 10;
+}
+
+.daytime-viewport:not(.active) *,
+.daytime-viewport.paused * {
+  animation-play-state: paused !important;
 }
 
 .daytime-viewport.active {
@@ -103,7 +108,6 @@
     rgba(175, 45, 65, 0.28) 45%,
     transparent 85%
   );
-  filter: blur(8px);
 }
 
 /* Twinkling Night Stars */
@@ -141,7 +145,6 @@
   inset: -20px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 250, 220, 0.35) 0%, rgba(220, 200, 255, 0.12) 50%, transparent 75%);
-  filter: blur(10px);
   animation: moonGlowPulse 6s ease-in-out infinite alternate;
 }
 
@@ -170,8 +173,6 @@
   left: -30%;
   width: 160%;
   height: 42%;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 24%, #000 76%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 24%, #000 76%, transparent 100%);
 }
 
 .cloud-tier .cloud-img {
@@ -179,8 +180,6 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  /* Dusk / Night nocturnal color grading */
-  filter: brightness(0.24) contrast(1.22) saturate(0.85) hue-rotate(-24deg) drop-shadow(0 0 16px rgba(10, 5, 22, 0.7));
 }
 
 .cloud-tier-high {
@@ -227,8 +226,6 @@
   position: absolute;
   inset: -6% -10% 0 -10%;
   transform-origin: 75% 0;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.4) 45%, transparent 85%);
-  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.4) 45%, transparent 85%);
   pointer-events: none;
 }
 
@@ -273,7 +270,6 @@
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 215, 120, 0.5) 0%, rgba(255, 170, 50, 0.18) 60%, transparent 100%);
-  filter: blur(4px);
   animation: bokehFloat 14s ease-in-out infinite alternate;
 }
 
@@ -328,13 +324,10 @@
   object-fit: contain;
   display: block;
   animation: birdBob 3.5s ease-in-out infinite alternate;
-  /* Evening bird silhouettes */
-  filter: brightness(0.18) contrast(1.4);
 }
 
 .flock-far .birds-img {
   animation-duration: 4.6s;
-  filter: brightness(0.16) contrast(1.4);
 }
 
 @keyframes birdFlight {
@@ -415,10 +408,6 @@
   width: 100%;
   height: auto;
   display: block;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 8%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 8%);
-  /* Evening/Night color grading: deep navy-green shadows, warm rim highlights */
-  filter: brightness(0.40) contrast(1.18) saturate(0.85) hue-rotate(-18deg) drop-shadow(0 15px 35px rgba(4, 6, 15, 0.85));
 }
 
 /* Tree Fairy Lights */
@@ -451,9 +440,9 @@
 }
 
 @keyframes fairyTwinkle {
-  0%   { opacity: 0.55; }
-  50%  { opacity: 1; filter: drop-shadow(0 0 6px rgba(255, 215, 110, 0.9)); }
-  100% { opacity: 0.65; }
+  0%   { opacity: 0.45; transform: scale(0.96); }
+  50%  { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 0.6; transform: scale(0.98); }
 }
 
 /* Tree Hanging Lanterns */
@@ -511,7 +500,6 @@
   height: 70px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 185, 60, 0.75) 0%, rgba(255, 120, 20, 0.3) 50%, transparent 75%);
-  filter: blur(8px);
   animation: glowFlicker 2.5s ease-in-out infinite alternate;
 }
 
@@ -552,8 +540,6 @@
   width: 100%;
   height: auto;
   display: block;
-  /* Night-time mandap lighting: luminous ivory, rich marigold, and warm candlelit drop-shadow */
-  filter: brightness(0.92) contrast(1.15) saturate(1.12) drop-shadow(0 0 35px rgba(255, 185, 75, 0.45)) drop-shadow(0 18px 36px rgba(10, 4, 18, 0.85));
 }
 
 .mandap-glow {
@@ -565,7 +551,6 @@
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(255, 215, 120, 0.35) 0%, rgba(240, 145, 40, 0.15) 60%, transparent 100%);
   animation: glowBreath 6s ease-in-out infinite alternate;
-  filter: blur(10px);
 }
 
 @keyframes glowBreath {
@@ -646,7 +631,6 @@
   width: 100%;
   height: 100%;
   display: block;
-  filter: drop-shadow(0 6px 14px rgba(10, 4, 18, 0.65));
 }
 
 .drape-cloth-l {
@@ -706,7 +690,6 @@
   margin-left: -70px;
   border-radius: 50%;
   background: radial-gradient(ellipse at 50% 50%, rgba(255, 175, 45, 0.85) 0%, rgba(240, 85, 10, 0.42) 45%, transparent 75%);
-  filter: blur(10px);
   animation: hearthGlowPulse 2.0s ease-in-out infinite alternate;
 }
 
@@ -719,7 +702,6 @@
   margin-left: -100px;
   border-radius: 50%;
   background: radial-gradient(ellipse at 50% 50%, rgba(255, 140, 30, 0.35) 0%, rgba(220, 60, 5, 0.15) 55%, transparent 80%);
-  filter: blur(16px);
   animation: hearthGlowPulse 2.8s ease-in-out infinite alternate-reverse;
 }
 
@@ -733,7 +715,6 @@
   width: 100%;
   height: auto;
   display: block;
-  filter: brightness(0.96) contrast(1.15) saturate(1.12) drop-shadow(0 6px 14px rgba(10, 4, 2, 0.75));
   position: relative;
   z-index: 1;
 }
@@ -754,7 +735,6 @@
   width: 100%;
   height: 100%;
   display: block;
-  filter: drop-shadow(0 0 10px #ff8800) drop-shadow(0 0 24px rgba(255, 60, 0, 0.7));
 }
 
 .mandap-lantern .lantern-body {
@@ -785,7 +765,6 @@
   height: 55px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 195, 75, 0.75) 0%, rgba(255, 120, 20, 0.28) 50%, transparent 75%);
-  filter: blur(6px);
   animation: glowFlicker 2.2s ease-in-out infinite alternate;
 }
 
@@ -836,7 +815,6 @@
   height: 72px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 195, 75, 0.5) 0%, rgba(255, 120, 20, 0.18) 50%, transparent 75%);
-  filter: blur(8px);
   animation: glowFlicker 2.2s ease-in-out infinite alternate;
 }
 
@@ -851,7 +829,6 @@
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 220, 130, 0.55) 0%, rgba(255, 165, 45, 0.2) 55%, transparent 75%);
-  filter: blur(3px);
   animation: bokehDrift 10s ease-in-out infinite alternate;
 }
 
@@ -891,8 +868,6 @@
   width: 100%;
   height: auto;
   display: block;
-  /* Night-time hanging floral grading */
-  filter: brightness(0.72) contrast(1.14) saturate(0.96) drop-shadow(0 10px 22px rgba(12, 4, 18, 0.8));
 }
 
 @keyframes branchSwayLeft {
@@ -954,7 +929,6 @@
   width: clamp(115px, 32%, 150px);
   pointer-events: none;
   z-index: 12;
-  filter: brightness(0.94) contrast(1.14) saturate(1.1) drop-shadow(0 8px 18px rgba(4, 2, 14, 0.85));
 }
 
 .peacock-rig {
@@ -981,7 +955,6 @@
   height: 9%;
   border-radius: 50%;
   background: radial-gradient(ellipse at center, rgba(6, 3, 10, 0.72) 0%, rgba(10, 5, 14, 0.35) 45%, transparent 75%);
-  filter: blur(4px);
   transform: rotate(-3deg);
   z-index: 1;
 }
@@ -1131,8 +1104,6 @@
   width: 100%;
   height: auto;
   display: block;
-  /* Deep evening garden foliage grading */
-  filter: brightness(0.48) contrast(1.14) saturate(0.88) hue-rotate(-14deg) drop-shadow(0 -6px 16px rgba(10, 4, 18, 0.7));
 }
 
 /* Garden Pathway Glowing Diyas */
@@ -1167,7 +1138,6 @@
   height: 60px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 185, 60, 0.7) 0%, rgba(255, 110, 20, 0.25) 50%, transparent 75%);
-  filter: blur(8px);
   animation: glowFlicker 2.3s ease-in-out infinite alternate;
 }
 
@@ -1188,7 +1158,6 @@
   width: 100%;
   height: auto;
   display: block;
-  filter: brightness(0.56) contrast(1.18) saturate(1.08) drop-shadow(0 6px 16px rgba(10, 4, 18, 0.75));
 }
 
 @keyframes lotusFloat {
@@ -1224,7 +1193,6 @@
   height: 70px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 185, 60, 0.75) 0%, rgba(255, 120, 20, 0.28) 50%, transparent 75%);
-  filter: blur(8px);
 }
 
 .water-ripple {
@@ -1268,12 +1236,12 @@
 .evening-card-backdrop {
   position: relative;
   pointer-events: auto;
-  /* Translucent royal glassmorphism allowing background mandap, havan fire, and peacock to glow through */
+  /* Semi-opaque royal glass backdrop without GPU backdrop-filter blur */
   background: linear-gradient(
     135deg,
-    rgba(14, 10, 32, 0.52) 0%,
-    rgba(28, 8, 24, 0.44) 50%,
-    rgba(10, 8, 24, 0.56) 100%
+    rgba(14, 10, 32, 0.88) 0%,
+    rgba(28, 8, 24, 0.82) 50%,
+    rgba(10, 8, 24, 0.90) 100%
   );
   border: 1.2px solid rgba(224, 169, 60, 0.5);
   box-shadow:
@@ -1290,8 +1258,6 @@
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(224, 169, 60, 0.4) transparent;
-  backdrop-filter: blur(14px) saturate(135%);
-  -webkit-backdrop-filter: blur(14px) saturate(135%);
 }
 
 .evening-card-backdrop::-webkit-scrollbar {
@@ -1555,7 +1521,7 @@
 .btn-shimmer {
   position: absolute;
   top: 0;
-  left: -100%;
+  left: 0;
   width: 50%;
   height: 100%;
   background: linear-gradient(
@@ -1564,39 +1530,37 @@
     rgba(255, 255, 255, 0.45) 50%,
     transparent 100%
   );
-  transform: skewX(-25deg);
+  transform: translateX(-150%) skewX(-25deg);
   animation: btnShimmer 3.5s infinite;
+  will-change: transform;
 }
 
 @keyframes btnShimmer {
-  0%   { left: -100%; }
-  35%  { left: 200%; }
-  100% { left: 200%; }
+  0%   { transform: translateX(-150%) skewX(-25deg); }
+  35%  { transform: translateX(350%) skewX(-25deg); }
+  100% { transform: translateX(350%) skewX(-25deg); }
 }
 
 /* Venue Directions Modal */
 .venue-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(8, 6, 18, 0.48);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(4, 5, 14, 0.78);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  z-index: 100;
+  z-index: 999999;
   pointer-events: auto;
 }
 
 .venue-modal-card {
   position: relative;
-  /* Translucent royal glassmorphism matching the invitation card */
   background: linear-gradient(
     135deg,
-    rgba(14, 10, 32, 0.58) 0%,
-    rgba(28, 8, 24, 0.48) 50%,
-    rgba(10, 8, 24, 0.62) 100%
+    rgba(14, 10, 32, 0.95) 0%,
+    rgba(28, 8, 24, 0.94) 50%,
+    rgba(10, 8, 24, 0.96) 100%
   );
   border: 1.2px solid rgba(224, 169, 60, 0.55);
   border-radius: 18px;
@@ -1614,8 +1578,6 @@
     inset 0 1px 0 rgba(255, 235, 180, 0.25),
     inset 0 0 15px rgba(224, 169, 60, 0.08);
   color: #fff8ed;
-  backdrop-filter: blur(16px) saturate(135%);
-  -webkit-backdrop-filter: blur(16px) saturate(135%);
 }
 
 .venue-modal-card::-webkit-scrollbar {
@@ -1765,10 +1727,6 @@
   --k: clamp(0, calc((var(--copy, 1) * 2.1 - 0.15 - var(--i, 0) * 0.17) * 3), 1);
   opacity: var(--k);
   transform: translate3d(0, calc((1 - var(--k)) * 16px), 0);
-}
-
-.reveal-blur {
-  filter: blur(calc((1 - var(--k)) * 7px));
 }
 
 /* =========================================================

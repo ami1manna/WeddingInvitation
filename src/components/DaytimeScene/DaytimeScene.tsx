@@ -21,21 +21,23 @@ interface DaytimeSceneProps {
   progressRef?: React.MutableRefObject<number>;
   opacity?: number;
   reducedMotion?: boolean;
+  active?: boolean;
 }
 
 export const DaytimeScene: React.FC<DaytimeSceneProps> = React.memo(({
   progress = 0,
   progressRef,
   opacity = 1,
-  reducedMotion = false
+  reducedMotion = false,
+  active: propActive
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const active = opacity > 0.005;
+  const isSceneActive = propActive !== undefined ? propActive : (opacity > 0.005);
 
   const rig = useDepthRig(containerRef, {
     progress,
     progressRef,
-    enabled: active && !reducedMotion,
+    enabled: isSceneActive && !reducedMotion,
     reducedMotion
   });
 
@@ -59,7 +61,7 @@ export const DaytimeScene: React.FC<DaytimeSceneProps> = React.memo(({
   return (
     <div
       ref={containerRef}
-      className={`daytime-viewport ${active ? 'active' : ''}`}
+      className={`daytime-viewport ${isSceneActive ? 'active' : 'paused'}`}
       style={{
         opacity,
         visibility: opacity > 0 ? 'visible' : 'hidden'
@@ -73,12 +75,12 @@ export const DaytimeScene: React.FC<DaytimeSceneProps> = React.memo(({
         <BirdLayer reducedMotion={reducedMotion} />
         <TreeLayer />
         <HazeLayer />
-        <PetalLayer kind="back" rig={rig} active={active} reducedMotion={reducedMotion} />
-        <MandapLayer />
+        <PetalLayer kind="back" rig={rig} active={isSceneActive} reducedMotion={reducedMotion} />
+        <MandapLayer active={isSceneActive} />
         <HangingFloralLayer reducedMotion={reducedMotion} />
         <GardenLayer />
         <LotusLayer reducedMotion={reducedMotion} />
-        <PetalLayer kind="front" rig={rig} active={active} reducedMotion={reducedMotion} />
+        <PetalLayer kind="front" rig={rig} active={isSceneActive} reducedMotion={reducedMotion} />
         <InvitationCopy />
       </div>
     </div>

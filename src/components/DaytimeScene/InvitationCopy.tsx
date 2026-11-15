@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const GOOGLE_MAPS_LINK = 'https://share.google/JEChsBlKvg5lHRWlc';
 const VENUE_NAME = 'Dosti Westwood Banquets - Ileseum Clubs';
@@ -44,7 +45,7 @@ export const InvitationCopy: React.FC = React.memo(() => {
           {/* Swaroop Samanta & Parents -> Ampersand -> Pampa Manna & Parents */}
           <div className="invitation-couple-sequence">
             {/* Groom Block */}
-            <div className="couple-person-block reveal-line reveal-blur" style={line(2)}>
+            <div className="couple-person-block reveal-line" style={line(2)}>
               <h2 className="person-name name-groom">Swaroop Samanta</h2>
               <span className="relation-tag">S/o</span>
               <p className="parent-name-line">Nobin Samanta</p>
@@ -57,7 +58,7 @@ export const InvitationCopy: React.FC = React.memo(() => {
             </div>
 
             {/* Bride Block */}
-            <div className="couple-person-block reveal-line reveal-blur" style={line(4)}>
+            <div className="couple-person-block reveal-line" style={line(4)}>
               <h2 className="person-name name-bride">Pampa Manna</h2>
               <span className="relation-tag">D/o</span>
               <p className="parent-name-line">Samir Manna</p>
@@ -111,8 +112,8 @@ export const InvitationCopy: React.FC = React.memo(() => {
         </div>
       </div>
 
-      {/* Venue Directions Modal */}
-      {modalOpen && (
+      {/* Venue Directions Modal (rendered via Portal to prevent any parent transform/clipping) */}
+      {modalOpen && createPortal(
         <div className="venue-modal-overlay" onClick={closeModal} role="dialog" aria-modal="true">
           <div className="venue-modal-card" onClick={e => e.stopPropagation()}>
             <div className="card-gold-corner corner-tl" />
@@ -148,7 +149,8 @@ export const InvitationCopy: React.FC = React.memo(() => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
